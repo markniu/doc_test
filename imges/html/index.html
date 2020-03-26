@@ -18,6 +18,7 @@
     <input type="radio" id="radio1" name="radio" onclick="Save_src()" checked="checked" ><label for="radio1">Save this file</label>
     <input type="radio" id="radio2" name="radio"  onclick="Compile_src(1)"  ><label for="radio2">Verify</label>
     <input type="radio" id="radio3" name="radio" onclick="Compile_src(2)"  ><label for="radio3">Run</label>
+    <input type="radio" id="radio4" name="radio" onclick="update_src(0)"  ><label for="radio4">updateMarlin</label>
   </div>
   <p id="errlog_view"   style=""></p>
 </form>
@@ -206,6 +207,19 @@ function Compile_src(run_s)
 	}
 	
 }
+
+function update_src(rindex)
+{
+	if(rindex==0)
+	{
+		 $( "#dialog" ).dialog( "open" );
+		 document.getElementById("compile_view").value="updateing marlin\n";
+
+		socket.emit("src_update","marlin");
+		all_compile_flag=1;
+	}
+}
+
 </script>
 </html>
 </body>

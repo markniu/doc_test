@@ -212,12 +212,6 @@ function compile_make()
 	ls.stdout.on('data', (data) => {
 	   console.log(`stdout: ${data}`);
 	  socket.emit('src_compile_log',`${data}`); 
-	/* var str_log=`stdout: ${data}`;
-	  if(str_log.indexOf("make: Leaving directory '/media/usb/pandapi'")>=0)
-	  	socket.emit('src_compile_log',str_log);
-	  else
-	  	socket.emit('src_compile_log',str_log.);
-	  	//*/
 	});
 	ls.stderr.on('data', (data) => {
 	  console.log(`stderr: ${data}`);
@@ -234,20 +228,6 @@ function compile_make()
 
   socket.on('src_compile', function(data) { //get light switch status from client
     // 
-/*	var exec = require('child_process').exec;
-	var cmdStr = 'make clean -C '+path+'; make -C '+path;
-	
-	exec(cmdStr, function (err, stdout, srderr) {
-	if(err) {
-		console.log(srderr);
-		socket.emit('src_compile_log',srderr); 
-	} else {
-		console.log(stdout);
-		socket.emit('src_compile_log',stdout); 
-	
-	}
-	});
-*/
 	if(data=='all')
 	{
 		const { spawn } = require('child_process');
@@ -257,6 +237,37 @@ function compile_make()
 	else
 	{
 		compile_make();
+	}
+  });
+/////////////////////
+    socket.on('src_update', function(data) { //get light switch status from client
+    // 
+	if(data=='marlin')
+	{
+		console.log('src_update0326: ' + data);
+		const { spawn } = require('child_process');
+		const ls = spawn('svn', ['update', "/home/pi/phtml/html/"],{
+		  stdio: ['pipe', 'pipe', 'pipe']
+		});
+
+
+			ls.stdout.on('data', (data) => {
+			   console.log(`stdout: ${data}`);
+			  socket.emit('src_compile_log',`${data}`); 
+			});
+			ls.stderr.on('data', (data) => {
+			  console.log(`stderr: ${data}`);
+			  socket.emit('src_compile_log',`stderr:${data}`); 
+			});
+
+			ls.on('close', (code) => {
+			  socket.emit('src_compile_log',`stdclose:${code}`); 
+			});
+
+	}
+	else
+	{
+		 
 	}
   });
 /////////
