@@ -244,7 +244,7 @@ function compile_make()
     // 
 	if(data=='marlin')
 	{
-		console.log('src_update0326: ' + data);
+		console.log('src_update326: ' + data);
 		const { spawn } = require('child_process');
 		const ls = spawn('svn', ['update', "/home/pi/phtml/html/"],{
 		  stdio: ['pipe', 'pipe', 'pipe']
