@@ -61,26 +61,26 @@ function handler (request, response) { //create server
         console.log(request.url);
         switch(request.url) {
             case "/":
-                fname = "/home/pi/index.html";
+                fname = "/home/pi/phtml/html/index.html";
 			    read_u_path();
                 break;
             case "/css/socket.io.js":
-                fname = "/home/pi/css/socket.io.js";
+                fname = "/home/pi/phtml/html/css/socket.io.js";
                 break;
             case "/css/jquery-ui.min.css":
-                fname = "/home/pi/css/jquery-ui.min.css";
+                fname = "/home/pi/phtml/html/css/jquery-ui.min.css";
                 break;
             case "/css/jquery-ui.css":
-                fname = "/home/pi/css/jquery-ui.css";
+                fname = "/home/pi/phtml/html/css/jquery-ui.css";
                 break;
             case "/css/jquery.min.js":
-                fname = "/home/pi/css/jquery.min.js";
+                fname = "/home/pi/phtml/html/css/jquery.min.js";
                 break;
             case "/css/jquery-ui.min.js":
-                fname = "/home/pi/css/jquery-ui.min.js";
+                fname = "/home/pi/phtml/html/css/jquery-ui.min.js";
                 break;
             case "/css/style.css":
-                fname = "/home/pi/css/style.css";
+                fname = "/home/pi/phtml/html/css/style.css";
                 break;
             default:
                 break;
