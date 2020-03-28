@@ -6,38 +6,114 @@
   <script src="css/jquery.min.js"></script>
   <script src="css/jquery-ui.min.js"></script>
   <link rel="stylesheet" href="css/jquery-ui.css">
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  
+
+ 
  <style>
 
-    .selected{font-weight:bold; background: #0099; color:#ff00e;}
+    .selected{font-weight:bold; background: #FF99; color:#ff0FFe;}
 
 </style>
-<form>
-  <div id="radio">
-    <input type="radio" id="radio1" name="radio" onclick="Save_src()" checked="checked" ><label for="radio1">Save this file</label>
-    <input type="radio" id="radio2" name="radio"  onclick="Compile_src(1)"  ><label for="radio2">Verify</label>
-    <input type="radio" id="radio3" name="radio" onclick="Compile_src(2)"  ><label for="radio3">Run</label>
-    <input type="radio" id="radio4" name="radio" onclick="update_src(0)"  ><label for="radio4">updateMarlin</label>
+
+  <script>
+ function mover(x)
+ {
+	x.style.background='yellow';
+ }
+ function moverout(x)
+ {
+	x.style.background='lightgray';
+ }
+  
+  $( function() {
+    $( "#tabs" ).tabs();
+  } );
+  </script>
+
+ <div id="tabs" style=" height:85%; width:100%; float: left;">
+  <ul>
+    <li><a href="#tabs-1">Edit Marlin</a></li>
+    <li><a href="#tabs-2">Run Marlin </a></li>
+    <li><a href="#tabs-3">update system  </a></li>
+    <li><a href="#tabs-4">help  </a></li>
+  </ul>
+  <div id="tabs-1" style=" height:85%; width:95%; float: left;">
+    <h2>&nbsp;</h2>
+    <p id="errlog_view"   style=""></p>
+    <div id="radio">
+    <input type="radio" id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11">Save edited file</label>
+    <input type="radio" id="radio21" name="radio"  onclick="$( '#dialog-confirm').dialog({title:'Update Marlin source code?'}).dialog('open');"  ><label for="radio21">Update marlin from github</label>
+    
+    </div>
+     <p>
+		<textarea id="src_view" cols="50" rows="100" style=" height:95%; width:75%; float: left;top:0px;"></textarea>
+	 </p>
+	
+  <div style=" height:500px;overflow-x:auto; overflow-y:auto; ">
+		<table id="src_list" style="height:10%;width:100%;float:left; background: #ffffc8;"> </table>
+		<input type="button"  id="list_bu" onclick="list_show_f()" style="float:left;position: relative;right:0%;top:0%;width:100%" value="More"> 
+		<table id="src_list2" style="height:10%;width:100%;float:left;visibility:hidden; background: #ffffff;"> </table>
+    </div>
   </div>
-  <p id="errlog_view"   style=""></p>
-</form>
+  <div id="tabs-2" style=" height:85%; width:95%; float: left;">
+    <h2>&nbsp;</h2>
+    <div id="radio20">
+    <input type="radio" id="radio12" name="radio" onclick="Compile_src(1)" checked="checked" ><label for="radio12">Compile</label>
+    <input type="radio" id="radio22" name="radio"  onclick="Compile_src(2)"  ><label for="radio22">Run </label>
+    
+    </div>
+     <p>
+		<textarea id="compile_view" cols="50" rows="100" style=" height:95%; width:75%; float: left;"></textarea>
+	 </p>
+  </div>
+  <div id="tabs-3" style=" height:85%; width:95%; float: left;">
+    <h2>&nbsp;</h2>
+    <a onclick=" $( '#dialog-confirm').dialog({title:'Update web tools?'}).dialog('open');"  >update web tools</a>
 
-
-
-<div id="dialog" title="Console" style=" height:500px;overflow-x:auto; overflow-y:auto; ">
-  <p><textarea id="compile_view"   style="width:100%; height:200px;"></textarea></p>
+ 	<p>
+		<textarea id="compile_view" cols="50" rows="100" style=" height:95%; width:75%; float: left;"></textarea>
+	 </p>    
+  </div>
+  <div id="tabs-4" style=" height:85%; width:95%; float: left;">
+    <h2>&nbsp;</h2>
+     <p onmousemove="mover(this);" onmouseout="moverout(this)" onclick="location.href='https://github.com/markniu/PandaPi/wiki'" style="font-size:20px;color:#0099;background: #E9E9E9;">tutorial on wiki</p>
+     <p onmousemove="mover(this);" onmouseout="moverout(this)" onclick="location.href='https://www.facebook.com/groups/380795976169477/'" style="font-size:20px;color:#0099;background: #E9E9E9;"> facebook support group</p>
+  </div>  
 </div>
-<p>
-<textarea id="src_view" cols="50" rows="100" style=" height:500px; width:75%; float: left;"></textarea>
-</p>
 
-<div style=" height:500px;overflow-x:auto; overflow-y:auto; ">
-	<table id="src_list" style="height:10%;width:100%;float:left; background: #ffffc8;"> </table>
-	<input type="button"  id="list_bu" onclick="list_show_f()" style="float:left;position: relative;right:0%;top:0%;width:100%" value="More"> 
-	<table id="src_list2" style="height:10%;width:100%;float:left;visibility:hidden; background: #ffffff;"> </table>
-</div>
+ 	 <div id="dialog-confirm"  >
+ 	  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span> </p>
+ 	</div>
+
+
+
+
+
+    
+
 <script>
+$("#wiki").unbind('click');
+
+$(function() {
+    $( "#dialog-confirm" ).dialog({
+      resizable: false,
+      autoOpen: false,
+      height:140,
+      modal: true,
+      buttons: {
+        "Yes": function() {
+          $( this ).dialog( "close" );
+          if($(this).dialog( "option", "title" ).indexOf('Marlin')>=0)
+          	update_src(0);
+          else
+            update_src(1);
+        },
+        Cancel: function() {
+          $( this ).dialog( "close" );
+        }
+       }
+    });
+  });
+  
 var ls_show=0;
 function list_show_f()
 {
@@ -69,6 +145,7 @@ function list_show_f()
 
  $(function() {
     $( "#radio" ).buttonset();
+    $( "#radio20" ).buttonset();
   });
 
  $(function() {
@@ -114,10 +191,12 @@ socket.on('src_compile_log', function (data) { //get button status from client
 	 		alert("compile failed");
 	 	else
 			alert("compile ok");
+		all_compile_flag=0;	
 	 }
 	 else if(document.getElementById("compile_view").value.indexOf("arm-linux-gnueabihf-strip pi_marlin")>=0)
 	 {
 			alert("compile ok");
+			all_compile_flag=0;
 	 }
 	 else if(document.getElementById("compile_view").value.indexOf("Sd2Card.cpp -o Sd2Card.o")>=0)
 	 {
@@ -165,18 +244,18 @@ var select_name="Configuration.h";
 	  
 	 socket.emit("src_select", $(this).text());
 	 select_name=$(this).text();
-	 $(this).siblings('tr').removeClass('selected');  // 删除其他兄弟元素的样式
+	 $(this).siblings('tr').removeClass('selected');  //  
 	 $('#src_list2 tr').removeClass('selected');
-	 $(this).addClass('selected');                            // 添加当前元素的样式
+	 $(this).addClass('selected');                            //  
 });
 //////////////
  $('#src_list2').on('click','tr', function() {
 	  
 	 socket.emit("src_select", $(this).text());
 	 select_name=$(this).text();
-	 $(this).siblings('tr').removeClass('selected');  // 删除其他兄弟元素的样式
+	 $(this).siblings('tr').removeClass('selected');  //  
 	 $('#src_list tr').removeClass('selected');
-	 $(this).addClass('selected');                            // 添加当前元素的样式
+	 $(this).addClass('selected');                            //  
 });
 
 function Save_src()
@@ -192,12 +271,20 @@ function Compile_src(run_s)
 	    document.getElementById("compile_view").value="Compiling ...";
 		socket.emit("src_compile","");
 		all_compile_flag=1;
+		$( '#radio20 input' ).attr( 'disabled', true);
+		$( '#radio12 input' ).attr( 'disabled', true);
+		$( '#radio22 input' ).attr( 'disabled', true);
+		 
 	}
 	else if(run_s==1)
 	{
 	    document.getElementById("compile_view").value="Compiling All, may need more than 2 minutes ...";
 		socket.emit("src_compile","all");
 		all_compile_flag=1;
+
+		 $("#radio20").prop("disabled", true);
+		 $("#radio12").prop("disabled", true);
+		 $("#radio22").prop("disabled", true);
 	}
 	else
 	{
@@ -213,10 +300,18 @@ function update_src(rindex)
 	if(rindex==0)
 	{
 		 $( "#dialog" ).dialog( "open" );
-		 document.getElementById("compile_view").value="updateing marlin32\n";
+		 document.getElementById("compile_view").value="Updating marlin\n\n";
 
 		socket.emit("src_update","marlin");
-		all_compile_flag=1;
+		 
+	}
+	if(rindex==1)
+	{
+		 $( "#dialog" ).dialog( "open" );
+		 document.getElementById("compile_view").value="updateing web_tools\n";
+
+		socket.emit("src_update","web_tools");
+		 
 	}
 }
 

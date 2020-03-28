@@ -33,10 +33,15 @@ function read_u_path()
 	  if (err) throw err;
 	  console.log('OK: ' + filenam);
 	  console.log(data)
-	  var pos = data.lastIndexOf(" /");
-	  path=data.substr(pos+1)+"/pandapi/";
-	  path=path.replace(/[\r\n]/g,"");  
-	  console.log("path:"+path)
+	  if(data.length>5)	
+	  {
+		  var pos = data.lastIndexOf(" /");
+		  path=data.substr(pos+1)+"/pandapi/";
+		  path=path.replace(/[\r\n]/g,"");  
+		  console.log("path:"+path)
+	  }
+	  else
+	  	path="";
 	});
 
 
@@ -146,7 +151,7 @@ io.sockets.on('connection', function (socket) {// WebSocket Connection
   });
  });
 
-
+console.log("open"+path);
 //2. 指定需要读取的路径
 //3. 读取路径，返回文件列表
 fs.readdir(path, (err, files) => {
@@ -155,7 +160,7 @@ fs.readdir(path, (err, files) => {
   	
   	//throw err;
   	console.log("can not open"+path);
-	socket.emit('src_err',"Can't find the folder 'pandapi' in the U disk! see <a href='https://github.com/markniu/PandaPi/wiki/How-to-Edit-Marlin-code'>wiki</a> ");
+	socket.emit('src_err',"Can't find the folder 'pandapi' in the U drive! please Plug in the U drive to Pi see <a href='https://github.com/markniu/PandaPi/wiki/How-to-Edit-Marlin-code'>wiki</a> ");
 	return;
   }
  // console.log(files);
@@ -242,9 +247,9 @@ function compile_make()
 /////////////////////
     socket.on('src_update', function(data) { //get light switch status from client
     // 
-	if(data=='marlin')
+	if(data=='web_tools')
 	{
-		console.log('src_update326: ' + data);
+		console.log('src_update: ' + data);
 		const { spawn } = require('child_process');
 		const ls = spawn('svn', ['update', "/home/pi/phtml/html/"],{
 		  stdio: ['pipe', 'pipe', 'pipe']
@@ -253,7 +258,13 @@ function compile_make()
 
 			ls.stdout.on('data', (data) => {
 			   console.log(`stdout: ${data}`);
-			  socket.emit('src_compile_log',`${data}`); 
+			 // socket.emit('src_compile_log',`${data}`); 
+			  
+			   var tstr=`${data}`;
+			   tstr=tstr.replace(/home/g," ");
+			   tstr=tstr.replace(/pi/g," ");
+			   socket.emit('src_compile_log',tstr); 
+
 			});
 			ls.stderr.on('data', (data) => {
 			  console.log(`stderr: ${data}`);
@@ -261,17 +272,62 @@ function compile_make()
 			});
 
 			ls.on('close', (code) => {
-			  socket.emit('src_compile_log',`stdclose:${code}`); 
+			  socket.emit('src_compile_log',`stdclose:${code}`+" \n\n Complete! Please reboot the Raspberry Pi"); 
 			});
 
 	}
-	else
+	else if(data=='marlin')
 	{
-		 
+		console.log('src_update: ' + data + "__"+path);
+		if(path.length<5)
+		{
+		    socket.emit('src_compile_log', " Error: no U disk, please plug in U disk(fat32) to Pi\n "); 
+			return;
+		}
+		const { spawn } = require('child_process');
+		const ls = spawn('svn', ['update', "/home/pi/PandaPI/Marlin2.x/"],{
+		  stdio: ['pipe', 'pipe', 'pipe']
+		});
+
+
+			ls.stdout.on('data', (data) => {
+			   console.log(`stdout: ${data}`);
+			   var tstr=`${data}`;
+			   tstr=tstr.replace(/home/g," ");
+			   tstr=tstr.replace(/pi/g," ");
+			   socket.emit('src_compile_log',tstr); 
+			});
+			ls.stderr.on('data', (data) => {
+			  console.log(`stderr: ${data}`);
+			  socket.emit('src_compile_log',`stderr:${data}`); 
+			});
+
+			ls.on('close', (code) => {
+			  //socket.emit('src_compile_log',`stdclose:${code}`); 
+			  
+			  ///////////////
+			  	var exec = require('child_process').exec;
+				var cmdStr = 'mv '+path+' '+path.substr(0,path.length-1)+'_old_'+Math.round(Math.random()*100);
+				 
+				socket.emit('src_compile_log', "\n Backuping  "+cmdStr +'\n\n .....'); 
+				cmdStr+=';cp /home/pi/PandaPI/Marlin2.x/pandapi '+path+' -rf';
+				exec(cmdStr, function (err, stdout, srderr) {
+				if(err) {
+					console.log(srderr);
+					socket.emit('src_compile_log',srderr); 
+				} else {
+					console.log(stdout);
+					socket.emit('src_compile_log',stdout+"\n\n Complete!"); 
+				
+				}
+				});
+			 //////////////////////////	
+			});
+
 	}
   });
 /////////
-  socket.on('src_run', function(data) { //get light switch status from client
+  socket.on('src_run', function(data) { // 
     // 
 	var exec = require('child_process').exec;
 	var cmdStr = 'killall pi_marlin;cp '+path+'libpi.so /home/pi/;cp '+path+'/pi_marlin /home/pi/ ';
@@ -281,7 +337,10 @@ function compile_make()
 		socket.emit('src_compile_log',srderr); 
 	} else {
 		console.log(stdout);
-		socket.emit('src_compile_log',stdout+"ok"); 
+		var tstr=stdout;
+	   tstr=tstr.replace(/home/g," ");
+	   tstr=tstr.replace(/pi/g," ");
+		socket.emit('src_compile_log',tstr+" \n\n Complete!"); 
 	
 	}
 	});
