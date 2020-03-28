@@ -325,14 +325,14 @@ function update_src(rindex)
 	{
 		 $( "#dialog" ).dialog( "open" );
 		// document.getElementById("compile_view").value="Updating marlin..\n\n";
-        document.getElementById("src_view").value="Updating marlin\n\n";
+        document.getElementById("src_view").value="Updating marlin..\n\n";
 		socket.emit("src_update","marlin");
 		 
 	}
 	if(rindex==1)
 	{
 		 $( "#dialog" ).dialog( "open" );
-		 document.getElementById("src_view").value="updateing web_tools..\n";
+		 document.getElementById("compile_view_tool").value="updateing web_tools..\n";
 
 		socket.emit("src_update","web_tools");
 		 
