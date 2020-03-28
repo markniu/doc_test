@@ -264,16 +264,16 @@ function compile_make()
 			   var tstr=`${data}`;
 			   tstr=tstr.replace(/home/g," ");
 			   tstr=tstr.replace(/pi/g," ");
-			   socket.emit('src_compile_log',tstr); 
+			   socket.emit('compile_view_tool',tstr); 
 
 			});
 			ls.stderr.on('data', (data) => {
 			  console.log(`stderr: ${data}`);
-			  socket.emit('src_compile_log',`stderr:${data}`); 
+			  socket.emit('compile_view_tool',`stderr:${data}`); 
 			});
 
 			ls.on('close', (code) => {
-			  socket.emit('src_compile_log',`stdclose:${code}`+" \n\n Complete! Please reboot the Raspberry Pi"); 
+			  socket.emit('compile_view_tool',`stdclose:${code}`+" \n\n Complete! Please reboot the Raspberry Pi"); 
 			});
 
 	}
@@ -282,7 +282,7 @@ function compile_make()
 		console.log('src_update: ' + data + "__"+path);
 		if(path.length<5)
 		{
-		    socket.emit('src_compile_log', " Error: no U disk, please plug in U disk(fat32) to Pi\n "); 
+		    socket.emit('src_view_down', " Error: no U drive, please plug in U drive(fat32) to Pi\n "); 
 			return;
 		}
 		const { spawn } = require('child_process');
@@ -296,11 +296,11 @@ function compile_make()
 			   var tstr=`${data}`;
 			   tstr=tstr.replace(/home/g," ");
 			   tstr=tstr.replace(/pi/g," ");
-			   socket.emit('src_compile_log',tstr); 
+			   socket.emit('src_view_down',tstr); 
 			});
 			ls.stderr.on('data', (data) => {
 			  console.log(`stderr: ${data}`);
-			  socket.emit('src_compile_log',`stderr:${data}`); 
+			  socket.emit('src_view_down',`stderr:${data}`); 
 			});
 
 			ls.on('close', (code) => {
@@ -310,15 +310,15 @@ function compile_make()
 			  	var exec = require('child_process').exec;
 				var cmdStr = 'mv '+path+' '+path.substr(0,path.length-1)+'_old_'+Math.round(Math.random()*100);
 				 
-				socket.emit('src_compile_log', "\n Backuping  "+cmdStr +'\n\n .....'); 
+				socket.emit('src_view_down', "\n Backuping  "+cmdStr +'\n\n .....'); 
 				cmdStr+=';cp /home/pi/PandaPI/Marlin2.x/pandapi '+path+' -rf';
 				exec(cmdStr, function (err, stdout, srderr) {
 				if(err) {
 					console.log(srderr);
-					socket.emit('src_compile_log',srderr); 
+					socket.emit('src_view_down',srderr); 
 				} else {
 					console.log(stdout);
-					socket.emit('src_compile_log',stdout+"\n\n Complete!"); 
+					socket.emit('src_view_down',stdout+"\n\n Complete!"); 
 				
 				}
 				});

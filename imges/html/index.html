@@ -36,8 +36,8 @@
     <li><a href="#tabs-3">update system  </a></li>
     <li><a href="#tabs-4">help  </a></li>
   </ul>
-  <div id="tabs-1" style=" height:85%; width:95%; float: left;">
-    <h2>&nbsp;</h2>
+  <div id="tabs-1" style=" height:55%; width:95%; float: left;">
+
     <p id="errlog_view"   style=""></p>
     <div id="radio">
     <input type="radio" id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11">Save edited file</label>
@@ -55,7 +55,7 @@
     </div>
   </div>
   <div id="tabs-2" style=" height:85%; width:95%; float: left;">
-    <h2>&nbsp;</h2>
+
     <div id="radio20">
     <input type="radio" id="radio12" name="radio" onclick="Compile_src(1)" checked="checked" ><label for="radio12">Compile</label>
     <input type="radio" id="radio22" name="radio"  onclick="Compile_src(2)"  ><label for="radio22">Run </label>
@@ -66,15 +66,15 @@
 	 </p>
   </div>
   <div id="tabs-3" style=" height:85%; width:95%; float: left;">
-    <h2>&nbsp;</h2>
+
     <a onclick=" $( '#dialog-confirm').dialog({title:'Update web tools?'}).dialog('open');"  >update web tools</a>
 
  	<p>
-		<textarea id="compile_view" cols="50" rows="100" style=" height:95%; width:75%; float: left;"></textarea>
+		<textarea id="compile_view_tool" cols="50" rows="100" style=" height:95%; width:75%; float: left;"></textarea>
 	 </p>    
   </div>
   <div id="tabs-4" style=" height:85%; width:95%; float: left;">
-    <h2>&nbsp;</h2>
+
      <p onmousemove="mover(this);" onmouseout="moverout(this)" onclick="location.href='https://github.com/markniu/PandaPi/wiki'" style="font-size:20px;color:#0099;background: #E9E9E9;">tutorial on wiki</p>
      <p onmousemove="mover(this);" onmouseout="moverout(this)" onclick="location.href='https://www.facebook.com/groups/380795976169477/'" style="font-size:20px;color:#0099;background: #E9E9E9;"> facebook support group</p>
   </div>  
@@ -181,6 +181,17 @@ socket.on('src_view', function (data) { //get button status from client
   //socket.emit("light", data); //send push button status to back to server
 });
 
+socket.on('src_view_down', function (data) { //get button status from client
+  
+ document.getElementById("src_view").value += data; //change checkbox according to push button on Raspberry Pi
+  //socket.emit("light", data); //send push button status to back to server
+});
+socket.on('compile_view_tool', function (data) { //get button status from client
+  
+ document.getElementById("compile_view_tool").value += data; //change checkbox according to push button on Raspberry Pi
+  //socket.emit("light", data); //send push button status to back to server
+});
+
 socket.on('src_compile_log', function (data) { //get button status from client
   	
 	 document.getElementById("compile_view").value += data; //change checkbox according to push button on Raspberry Pi
@@ -188,15 +199,28 @@ socket.on('src_compile_log', function (data) { //get button status from client
 	 if(document.getElementById("compile_view").value.indexOf("make: Leaving directory '/")>=0)
 	 {
 	 	if(document.getElementById("compile_view").value.indexOf("' failed")>=0)
+	 	{
 	 		alert("compile failed");
+	 		document.getElementById("src_view").value += "compile failed !";
+	 	}
 	 	else
+	 	{
 			alert("compile ok");
-		all_compile_flag=0;	
+			document.getElementById("src_view").value += "compile OK ! you can click run now";
+		}
+		  $("#radio20").prop("disabled", false);
+		  $("#radio12").prop("disabled", false);
+		  $("#radio22").prop("disabled", false);
+		  
 	 }
 	 else if(document.getElementById("compile_view").value.indexOf("arm-linux-gnueabihf-strip pi_marlin")>=0)
 	 {
 			alert("compile ok");
 			all_compile_flag=0;
+		  $("#radio20").prop("disabled", false);
+		  $("#radio12").prop("disabled", false);
+		  $("#radio22").prop("disabled", false);
+		  document.getElementById("src_view").value += "compile ok";
 	 }
 	 else if(document.getElementById("compile_view").value.indexOf("Sd2Card.cpp -o Sd2Card.o")>=0)
 	 {
@@ -278,7 +302,7 @@ function Compile_src(run_s)
 	}
 	else if(run_s==1)
 	{
-	    document.getElementById("compile_view").value="Compiling All, may need more than 2 minutes ...";
+	    document.getElementById("compile_view").value="Compiling All, may need more than several minutes ...";
 		socket.emit("src_compile","all");
 		all_compile_flag=1;
 
@@ -286,7 +310,7 @@ function Compile_src(run_s)
 		 $("#radio12").prop("disabled", true);
 		 $("#radio22").prop("disabled", true);
 	}
-	else
+	else if(run_s==2)
 	{
 	   document.getElementById("compile_view").value="The printer application will automatically restart within 10 seconds\n";
 	   socket.emit("src_run","");
@@ -300,15 +324,15 @@ function update_src(rindex)
 	if(rindex==0)
 	{
 		 $( "#dialog" ).dialog( "open" );
-		 document.getElementById("compile_view").value="Updating marlin\n\n";
-
+		// document.getElementById("compile_view").value="Updating marlin\n\n";
+        document.getElementById("src_view").value="Updating marlin\n\n";
 		socket.emit("src_update","marlin");
 		 
 	}
 	if(rindex==1)
 	{
 		 $( "#dialog" ).dialog( "open" );
-		 document.getElementById("compile_view").value="updateing web_tools\n";
+		 document.getElementById("src_view").value="updateing web_tools\n";
 
 		socket.emit("src_update","web_tools");
 		 
