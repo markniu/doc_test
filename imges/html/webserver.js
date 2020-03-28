@@ -87,6 +87,9 @@ function handler (request, response) { //create server
             case "/css/style.css":
                 fname = "/home/pi/phtml/html/css/style.css";
                 break;
+            case "/css/12435.png":
+                fname = "/home/pi/phtml/html/css/12435.png";
+                break;
             default:
                 break;
         }
