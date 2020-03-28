@@ -324,7 +324,7 @@ function update_src(rindex)
 	if(rindex==0)
 	{
 		 $( "#dialog" ).dialog( "open" );
-		// document.getElementById("compile_view").value="Updating marlin\n\n";
+		// document.getElementById("compile_view").value="Updating marlin..\n\n";
         document.getElementById("src_view").value="Updating marlin\n\n";
 		socket.emit("src_update","marlin");
 		 
@@ -332,7 +332,7 @@ function update_src(rindex)
 	if(rindex==1)
 	{
 		 $( "#dialog" ).dialog( "open" );
-		 document.getElementById("src_view").value="updateing web_tools\n";
+		 document.getElementById("src_view").value="updateing web_tools..\n";
 
 		socket.emit("src_update","web_tools");
 		 
