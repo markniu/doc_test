@@ -160,7 +160,8 @@ fs.readdir(path, (err, files) => {
   	
   	//throw err;
   	console.log("can not open"+path);
-	socket.emit('src_err',"Please Plug a U drive to Pi! see <a href='https://github.com/markniu/PandaPi/wiki/How-to-Edit-Marlin-code'>wiki</a> ");
+	if(path.length<5)	
+	   socket.emit('src_err',"Please Plug a U drive to Pi! see <a href='https://github.com/markniu/PandaPi/wiki/How-to-Edit-Marlin-code'>wiki</a> ");
 	return;
   }
  // console.log(files);
