@@ -10,7 +10,7 @@
  
  <style>
 
-    .selected{font-weight:bold; background: #FF99; color:#ff0FFe;}
+    .selected{font-weight:bold; background: #FF99; color:#4caf50;}
 
 </style>
 
@@ -36,19 +36,20 @@ $(document).ready(function(){
   } );
   </script>
 
- <div id="tabs" style=" height:85%; width:100%; float: left;">
+
+ <div id="tabs" style=" height:85%; width:100%; ">
   <ul>
-    <li><a href="#tabs-1">Edit Marlin</a></li>
-    <li><a href="#tabs-2">Run Marlin </a></li>
-    <li><a href="#tabs-3">update system  </a></li>
-    <li><a href="#tabs-4">help  </a></li>
+    <li><a href="#tabs-1" style=" background: #ffffc8;">Edit Marlin</a></li>
+    <li><a href="#tabs-2" style=" background: #ffffc8;">Run Marlin </a></li>
+    <li><a href="#tabs-3" style=" background: #ffffc8;">update system  </a></li>
+   
   </ul>
   <div id="tabs-1" style=" height:55%; width:95%; float: left;">
 
     <p id="errlog_view"   style=""></p>
     <div id="radio">
-    <input type="radio" id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11">Save edited file</label>
-    <input type="radio" id="radio21" name="radio"  onclick="$( '#dialog-confirm').dialog({title:'Update Marlin source code?'}).dialog('open');"  ><label for="radio21">Download marlin from github</label>
+    <input  type="radio" id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11"  >Save file</label>
+    <input type="radio" id="radio21" name="radio"  onclick="$( '#dialog-confirm').dialog({title:'Update Marlin source code?'}).dialog('open');"  ><label for="radio21">Download source</label>
     
     </div>
      <p>
@@ -86,6 +87,8 @@ $(document).ready(function(){
      <p onmousemove="mover(this);" onmouseout="moverout(this)" onclick="location.href='https://www.facebook.com/groups/380795976169477/'" style="font-size:20px;color:#0099;background: #E9E9E9;"> facebook support group</p>
   </div>  
 </div>
+
+<img src="css/12435.png"  style=" position:absolute;height:50px; width:50px;left:95%;top:21px">
 
  	 <div id="dialog-confirm"  >
  	  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span> </p>
