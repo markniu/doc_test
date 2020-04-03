@@ -352,7 +352,7 @@ function compile_make()
   socket.on('src_run', function(data) { // 
     // 
 	var exec = require('child_process').exec;
-	var cmdStr = 'killall pi_marlin;cp '+path+'libpi.so /home/pi/;cp '+path+'/pi_marlin /home/pi/ ';
+	var cmdStr = 'killall pi_marlin;cp '+path+'libpi.so /lib/;cp '+path+'/pi_marlin /home/pi/ ';
 	exec(cmdStr, function (err, stdout, srderr) {
 	if(err) {
 		console.log(srderr);
