@@ -41,15 +41,15 @@ $(document).ready(function(){
   <ul>
     <li><a href="#tabs-1" style=" background: #ffffc8;">Edit Marlin</a></li>
     <li><a href="#tabs-2" style=" background: #ffffc8;">Run Marlin </a></li>
-    <li><a href="#tabs-3" style=" background: #ffffc8;">update system  </a></li>
+    <li><a href="#tabs-3" style=" background: #ffffc8;">Update Raspbian  </a></li>
    
   </ul>
   <div id="tabs-1" style=" height:55%; width:95%; float: left;">
 
     <p id="errlog_view"   style=""></p>
     <div id="radio">
-    <input  type="radio" id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11"  >Save file</label>
-    <input type="radio" id="radio21" name="radio"  onclick="$( '#dialog-confirm').dialog({title:'Update Marlin source code?'}).dialog('open');"  ><label for="radio21">Download source</label>
+    <a    id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11"  >Save changes</label></a>
+    <a   id="radio21" name="radio" onmouseover="Downlaod_detail(this)" onmouseout="Downlaod_undetail(this)" onclick="$( '#dialog-confirm').dialog({title:'Download Marlin source code?'}).dialog('open');"  ><label for="radio21">Update source</label></a>
     
     </div>
      <p>
@@ -58,7 +58,7 @@ $(document).ready(function(){
 	
   <div style=" height:500px;overflow-x:auto; overflow-y:auto; ">
 		<table id="src_list" style="height:10%;width:100%;float:left; background: #ffffc8;"> </table>
-		<input type="button"  id="list_bu" onclick="list_show_f()" style="float:left;position: relative;right:0%;top:0%;width:100%" value="More"> 
+		<input type="button"  id="list_bu" onclick="list_show_f()" style="float:left;position: relative;right:0%;top:0%;width:100%" value="Backed up"> 
 		<table id="src_list2" style="height:10%;width:100%;float:left;visibility:hidden; background: #ffffff;"> </table>
     </div>
   </div>
@@ -75,7 +75,7 @@ $(document).ready(function(){
   </div>
   <div id="tabs-3" style=" height:85%; width:95%; float: left;">
 
-    <a onclick=" $( '#dialog-confirm').dialog({title:'Update web tools?'}).dialog('open');"  >update web tools</a>
+    <a onclick=" $( '#dialog-confirm').dialog({title:'Update Raspbian?'}).dialog('open');"  >Update Raspbian</a>
 
  	<p>
 		<textarea id="compile_view_tool" cols="50" rows="100" style=" height:95%; width:75%; float: left;"></textarea>
@@ -101,6 +101,18 @@ $(document).ready(function(){
     
 
 <script>
+
+function Downlaod_detail(x)
+{	 
+	x.text = "Update Marlin source code from Pandapi github";
+}
+
+function Downlaod_undetail(x)
+{
+   x.text = "Update source";
+}
+
+
 $("#wiki").unbind('click');
 
 $(function() {
@@ -131,7 +143,7 @@ function list_show_f()
 	{
 		ls_show=0;
 		document.getElementById('src_list2').style.visibility="hidden";
-		document.getElementById('list_bu').value="More";
+		document.getElementById('list_bu').value="Backed up";
 	}
 	else
 	{

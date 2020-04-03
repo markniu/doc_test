@@ -4,7 +4,7 @@ var io = require('socket.io')(http) //require socket.io module and pass the http
 //var Gpio = require('onoff').Gpio; //include onoff to interact with the GPIO
 //var LED = new Gpio(4, 'out'); //use GPIO pin 4 as output
 //var pushButton = new Gpio(17, 'in', 'both'); //use GPIO pin 17 as input, and 'both' button presses, and releases should be handled
-let path = "/media/usb/pandapi/";
+let path = "/home/pi/PandaPI/Marlin2.x/pandapi/";
 
 http.listen(8181); //listen to port 8080
 
@@ -67,7 +67,8 @@ function handler (request, response) { //create server
         switch(request.url) {
             case "/":
                 fname = "/home/pi/phtml/html/index.html";
-			    read_u_path();
+			    //read_u_path();
+				path="/home/pi/PandaPI/Marlin2.x/pandapi/";
                 break;
             case "/css/socket.io.js":
                 fname = "/home/pi/phtml/html/css/socket.io.js";
@@ -164,7 +165,7 @@ fs.readdir(path, (err, files) => {
   	//throw err;
   	console.log("can not open"+path);
 	if(path.length<5)	
-	   socket.emit('src_err',"Please Plug a U drive to Pi! and then refesh web. see <a href='https://github.com/markniu/PandaPi/wiki/How-to-Edit-Marlin-code'>wiki</a> ");
+	   socket.emit('src_err',"can not open "+path+". see <a href='https://github.com/markniu/PandaPi/wiki/How-to-Edit-Marlin-code'>wiki</a> ");
 	return;
   }
  // console.log(files);
@@ -209,6 +210,15 @@ fs.readdir(path, (err, files) => {
 	})
 
   });
+
+function get_date_filename()
+{
+	var d = new Date();
+	var monthl=d.getMonth()+1;
+	var name="_"+monthl+""+d.getDate()+"_"+d.getHours()+""+d.getMinutes()+"";
+    return name;
+}
+
   
 function compile_make()
 {
@@ -282,16 +292,31 @@ function compile_make()
 	}
 	else if(data=='marlin')
 	{
-		console.log('src_update: ' + data + "__"+path);
-		if(path.length<5)
+	///////////////
+	  	var exec = require('child_process').exec;
+		//var cmdStr = 'mv '+path+' '+path.substr(0,path.length-1)+'_old_'+Math.round(Math.random()*100);
+		var cmdStr = 'mv '+path+'Configuration.h  '+path+"Configuration"+get_date_filename()+".h;";
+		cmdStr += 'mv '+path+'Configuration_adv.h  '+path+"Configuration_adv"+get_date_filename()+".h;";
+	 
+		socket.emit('src_view_down', "\n Backuping  "+cmdStr +'\n\n .....'); 
+		exec(cmdStr, function (err, stdout, srderr) {
+		if(err) {
+			console.log(srderr);
+			socket.emit('src_view_down',srderr); 
+		} else 
 		{
-		    socket.emit('src_view_down', " Error: no U drive, please plug in U drive(fat32) to Pi\n "); 
-			return;
+			console.log(stdout);
 		}
-		const { spawn } = require('child_process');
-		const ls = spawn('svn', ['update', "/home/pi/PandaPI/Marlin2.x/"],{
-		  stdio: ['pipe', 'pipe', 'pipe']
-		});
+
+		{
+			
+
+			console.log('src_update: ' + data + "__"+path);
+
+			const { spawn } = require('child_process');
+			const ls = spawn('svn', ['update', "/home/pi/PandaPI/Marlin2.x/"],{
+			  stdio: ['pipe', 'pipe', 'pipe']
+			});
 
 
 			ls.stdout.on('data', (data) => {
@@ -309,24 +334,17 @@ function compile_make()
 			ls.on('close', (code) => {
 			  //socket.emit('src_compile_log',`stdclose:${code}`); 
 			  
-			  ///////////////
-			  	var exec = require('child_process').exec;
-				var cmdStr = 'mv '+path+' '+path.substr(0,path.length-1)+'_old_'+Math.round(Math.random()*100);
-				 
-				socket.emit('src_view_down', "\n Backuping  "+cmdStr +'\n\n .....'); 
-				cmdStr+=';cp /home/pi/PandaPI/Marlin2.x/pandapi '+path+' -rf';
-				exec(cmdStr, function (err, stdout, srderr) {
-				if(err) {
-					console.log(srderr);
-					socket.emit('src_view_down',srderr); 
-				} else {
-					console.log(stdout);
-					socket.emit('src_view_down',stdout+"\n\n Complete!"); 
-				
-				}
-				});
-			 //////////////////////////	
-			});
+			  socket.emit('src_view_down',stdout+"\n\n Complete!"); 	
+			  socket.emit('src_view_down',stdout+"\n\n Please reload this Page."); 	
+			  
+			   	
+			});			
+			
+		
+		}
+		});
+	 //////////////////////////
+
 
 	}
   });
