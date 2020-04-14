@@ -96,7 +96,7 @@ $(document).ready(function(){
     
 
 <script>
-
+var updateing=0;
 function Downlaod_detail(x)
 {	 
 	x.text = "Update Marlin source code from Pandapi github";
@@ -218,12 +218,12 @@ socket.on('src_compile_log', function (data) { //get button status from client
 	 	if(document.getElementById("compile_view").value.indexOf("' failed")>=0)
 	 	{
 	 		alert("compile failed");
-	 		document.getElementById("src_view").value += "compile failed !";
+	 		document.getElementById("compile_view").value += "compile failed !";
 	 	}
 	 	else
 	 	{
 			alert("compile ok");
-			document.getElementById("src_view").value += "compile OK ! you can click run now";
+			document.getElementById("compile_view").value += "compile OK ! you can click run now";
 		}
 		  $("#radio20").prop("disabled", false);
 		  $("#radio12").prop("disabled", false);
@@ -237,7 +237,7 @@ socket.on('src_compile_log', function (data) { //get button status from client
 		  $("#radio20").prop("disabled", false);
 		  $("#radio12").prop("disabled", false);
 		  $("#radio22").prop("disabled", false);
-		  document.getElementById("src_view").value += "compile ok";
+		  document.getElementById("compile_view").value += "compile ok";
 	 }
 	 else if(document.getElementById("compile_view").value.indexOf("Sd2Card.cpp -o Sd2Card.o")>=0)
 	 {
@@ -301,6 +301,11 @@ var select_name="Configuration.h";
 
 function Save_src()
 {
+    if(updateing==1)
+    {
+      alert("If the update is complete, please reload this page");
+      return;
+    }
 	var src_o=document.getElementById("src_view").value;
 	socket.emit("src_write",select_name+"|luojin|"+src_o);
 }
@@ -342,12 +347,18 @@ function update_src(rindex)
 	{
 		 $( "#dialog" ).dialog( "open" );
 		// document.getElementById("compile_view").value="Updating marlin..\n\n";
-        document.getElementById("src_view").value="Updating marlin..\n\n";
+		updateing=1;
+		
+        document.getElementById("src_view").value="Updating marlin...\n\n";
 		socket.emit("src_update","marlin");
+		  
+		 
+		 
 		 
 	}
 	if(rindex==1)
 	{
+		 updateing=1;
 		 $( "#dialog" ).dialog( "open" );
 		 document.getElementById("compile_view_tool").value="updateing web_tools..\n";
 
