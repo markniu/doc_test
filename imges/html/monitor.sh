@@ -17,6 +17,7 @@ if [ "$stillRunning" ]  ; then
 #kill -9 $pidof /home/pi/pi_marlin
 sleep 1
 else
+sleep 3
 echo "TWS service was not started"
 echo "Starting service ..."
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/pi

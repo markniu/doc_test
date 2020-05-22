@@ -290,6 +290,22 @@ function compile_make()
 			});
 
 	}
+	else if(data=='delete_file')
+	{
+	  	var exec = require('child_process').exec;
+		var cmdStr = 'rm '+path+'Configuration_adv_*;';
+		cmdStr += 'rm '+path+'Configuration_[0-9]* ';	 
+		exec(cmdStr, function (err, stdout, srderr) {
+		if(err) {
+			console.log(srderr);
+			socket.emit('src_view_down',srderr); 
+		} else 
+		{
+			console.log(stdout);
+		}	
+		});
+		
+	}
 	else if(data=='marlin')
 	{
 	///////////////
@@ -334,8 +350,9 @@ function compile_make()
 			ls.on('close', (code) => {
 			  //socket.emit('src_compile_log',`stdclose:${code}`); 
 			  
-			  socket.emit('src_view_down',stdout+"\n\n Complete!"); 	
-			  socket.emit('src_view_down',stdout+"\n\n Please reload this Page."); 	
+			  socket.emit('src_view_down',stdout+"\n\n Complete! Please reload this Page."); 	
+			  socket.emit('alert_dialog',stdout+"Complete! Please reload this Page."); 	
+
 			  
 			   	
 			});			
@@ -352,7 +369,7 @@ function compile_make()
   socket.on('src_run', function(data) { // 
     // 
 	var exec = require('child_process').exec;
-	var cmdStr = 'killall pi_marlin;cp '+path+'libpi.so /lib/;cp '+path+'/pi_marlin /home/pi/ ';
+	var cmdStr = 'killall pi_marlin;cp '+path+'libpi.so /lib/;killall pi_marlin;sleep 1;cp '+path+'/pi_marlin /home/pi/ ';
 	exec(cmdStr, function (err, stdout, srderr) {
 	if(err) {
 		console.log(srderr);

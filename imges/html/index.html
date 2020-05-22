@@ -59,6 +59,7 @@ $(document).ready(function(){
   <div style=" height:500px;overflow-x:auto; overflow-y:auto; ">
 		<table id="src_list" style="height:10%;width:100%;float:left; background: #ffffc8;"> </table>
 		<input type="button"  id="list_bu" onclick="list_show_f()" style="float:left;position: relative;right:0%;top:0%;width:100%" value="Backed up"> 
+		<input type="button"  id="list_delete" onclick=" $( '#dialog-confirm').dialog({title:'Delete All the Backed up Files?'}).dialog('open');"  style="float:left;position: relative;right:0%;top:0%;width:50%;visibility:hidden;" value="Delete All"> 
 		<table id="src_list2" style="height:10%;width:100%;float:left;visibility:hidden; background: #ffffff;"> </table>
     </div>
   </div>
@@ -108,6 +109,30 @@ function Downlaod_undetail(x)
 }
 
 
+function src_list_check(check_file_name)
+{
+    var ret=0;
+	$('#src_list tr').each(function(i){                  
+		$(this).children('td').each(function(j){   
+		 
+		 if(check_file_name==$(this).text()){
+		 
+		  ret=1;
+		  }
+		});
+	});
+
+	$('#src_list2 tr').each(function(i){                   // ± 
+		$(this).children('td').each(function(j){  // ±éÀú tr µÄ¸÷¸ö td
+		// alert("µÚ"+(i+1)+"ÐÐ£¬µÚ"+(j+1)+"¸ötdµÄÖµ£º"+$(this).text()+"¡£");
+		 if(check_file_name==$(this).text())
+		  ret=1;
+		});
+	});
+	
+	return ret;
+}
+
 $("#wiki").unbind('click');
 
 $(function() {
@@ -121,11 +146,18 @@ $(function() {
           $( this ).dialog( "close" );
           if($(this).dialog( "option", "title" ).indexOf('Marlin')>=0)
           	update_src(0);
+          else if($(this).dialog( "option", "title" ).indexOf('Delete')>=0)
+		  {
+			update_Delete_file();
+			setTimeout("window.location.reload()",2000);
+			
+		  }
           else
             update_src(1);
         },
         Cancel: function() {
           $( this ).dialog( "close" );
+
         }
        }
     });
@@ -139,12 +171,14 @@ function list_show_f()
 		ls_show=0;
 		document.getElementById('src_list2').style.visibility="hidden";
 		document.getElementById('list_bu').value="Backed up";
+		document.getElementById('list_delete').style.visibility="hidden";
 	}
 	else
 	{
 		ls_show=1;
 		document.getElementById('src_list2').style.visibility="visible";
 		document.getElementById('list_bu').value="hidden";
+		document.getElementById('list_delete').style.visibility="visible";
 	}
 
 }
@@ -209,6 +243,13 @@ socket.on('compile_view_tool', function (data) { //get button status from client
   //socket.emit("light", data); //send push button status to back to server
 });
 
+socket.on('alert_dialog', function (data) {  
+  alert(data);
+
+
+
+});
+
 socket.on('src_compile_log', function (data) { //get button status from client
   	
 	 document.getElementById("compile_view").value += data; //change checkbox according to push button on Raspberry Pi
@@ -265,17 +306,23 @@ socket.on('src_log', function (data) { //get button status from client
 socket.on('src_list', function (data) { //get button status from client  
   if(data=='Configuration.h'||data=='Configuration_adv.h'||data=='Marlin_main.cpp'||data=='pins_PANDA_PI.h')
   {
-	  var y = document.getElementById('src_list').insertRow(0).insertCell(0);
-	  y.innerHTML  = data;
-	  if(data=='Configuration.h')
-	  	$('#src_list tr').addClass('selected'); 
-	  document.getElementById('src_list').style.overflow="auto";
+      if(src_list_check(data)==0)
+      {
+		  var y = document.getElementById('src_list').insertRow(0).insertCell(0);
+		  y.innerHTML  = data;
+		  if(data=='Configuration.h')
+		  	$('#src_list tr').addClass('selected'); 
+		  document.getElementById('src_list').style.overflow="auto";
+	  }
   }
   else
   {
+  	if(src_list_check(data)==0)
+  	{
 	  var y = document.getElementById('src_list2').insertRow(0).insertCell(0);
 	  y.innerHTML  = data;
 	  document.getElementById('src_list2').style.overflow="auto";
+	 }
   }
 });
 
@@ -339,6 +386,11 @@ function Compile_src(run_s)
 	   
 	}
 	
+}
+
+function update_Delete_file()
+{
+	socket.emit("src_update","delete_file"); 	
 }
 
 function update_src(rindex)
