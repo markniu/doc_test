@@ -223,7 +223,7 @@ function get_date_filename()
 function chmod_monitor()
 {
     var exec = require('child_process').exec;
-	var cmdStr = 'sudo chmod 777 /home/pi/phtml/html/*' ;
+	var cmdStr = 'sudo chmod 777 /home/pi/phtml/html/* ;sudo /home/pi/phtml/html/monitor_mo.sh' ;
 	
 	exec(cmdStr, function (err, stdout, srderr) {
 	if(err) {
