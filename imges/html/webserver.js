@@ -116,7 +116,7 @@ function handler (request, response) { //create server
 io.sockets.on('connection', function (socket) {// WebSocket Connection
   var lightvalue = 0; //static variable for current status
   console.log('connect');
- // chmod_monitor();
+  chmod_monitor();
   //////////////
  
 ///////////
