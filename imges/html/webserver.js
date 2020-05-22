@@ -116,6 +116,7 @@ function handler (request, response) { //create server
 io.sockets.on('connection', function (socket) {// WebSocket Connection
   var lightvalue = 0; //static variable for current status
   console.log('connect');
+ // chmod_monitor();
   //////////////
  
 ///////////
@@ -219,6 +220,20 @@ function get_date_filename()
     return name;
 }
 
+function chmod_monitor()
+{
+    var exec = require('child_process').exec;
+	var cmdStr = 'sudo chmod 777 /home/pi/phtml/html/*' ;
+	
+	exec(cmdStr, function (err, stdout, srderr) {
+	if(err) {
+		console.log(srderr);
+	} else 
+	{
+		console.log(stdout);
+	}	
+	});
+}
   
 function compile_make()
 {
@@ -286,6 +301,7 @@ function compile_make()
 			});
 
 			ls.on('close', (code) => {
+			  var t=setTimeout(chmod_monitor,1000);
 			  socket.emit('compile_view_tool',`stdclose:${code}`+" \n\n Complete! Please reboot the Raspberry Pi"); 
 			});
 
@@ -294,7 +310,9 @@ function compile_make()
 	{
 	  	var exec = require('child_process').exec;
 		var cmdStr = 'rm '+path+'Configuration_adv_*;';
-		cmdStr += 'rm '+path+'Configuration_[0-9]* ';	 
+		cmdStr += 'rm '+path+'Configuration_[0-9]* ;';	 
+		cmdStr += 'rm '+path+'pins_PANDA_PI[0-9]* ;';
+		
 		exec(cmdStr, function (err, stdout, srderr) {
 		if(err) {
 			console.log(srderr);
@@ -313,7 +331,8 @@ function compile_make()
 		//var cmdStr = 'mv '+path+' '+path.substr(0,path.length-1)+'_old_'+Math.round(Math.random()*100);
 		var cmdStr = 'mv '+path+'Configuration.h  '+path+"Configuration"+get_date_filename()+".h;";
 		cmdStr += 'mv '+path+'Configuration_adv.h  '+path+"Configuration_adv"+get_date_filename()+".h;";
-	 
+	    cmdStr += 'mv '+path+'pins_PANDA_PI.h  '+path+"pins_PANDA_PI"+get_date_filename()+".h;";
+		
 		socket.emit('src_view_down', "\n Backuping  "+cmdStr +'\n\n .....'); 
 		exec(cmdStr, function (err, stdout, srderr) {
 		if(err) {
