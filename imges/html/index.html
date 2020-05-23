@@ -256,7 +256,8 @@ socket.on('src_compile_log', function (data) { //get button status from client
 
 	 if(document.getElementById("compile_view").value.indexOf("make: Leaving directory '/")>=0)
 	 {
-	 	if(document.getElementById("compile_view").value.indexOf("' failed")>=0)
+	 	if((document.getElementById("compile_view").value.indexOf("' failed")>=0)||
+	 	  (document.getElementById("compile_view").value.indexOf(" Error ")>=0))
 	 	{
 	 		alert("compile failed");
 	 		document.getElementById("compile_view").value += "compile failed !";
