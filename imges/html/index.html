@@ -1,13 +1,29 @@
 
 <html>
+<head>
+    <meta charset="UTF-8">
+</head>
 <body>
-<meta charset="utf-8">
+
 <script src="css/socket.io.js"></script> <!-- include socket.io client side script -->
   <script src="css/jquery.min.js"></script>
   <script src="css/jquery-ui.min.js"></script>
   <link rel="stylesheet" href="css/jquery-ui.css">
 
- 
+
+<link rel=stylesheet href="CM/doc/docs.css">
+
+<link rel="stylesheet" href="CM/lib/codemirror.css">
+<link rel="stylesheet" href="CM/theme/eclipse.css">
+
+<script src="CM/lib/codemirror.js"></script>
+<script src="CM/addon/edit/matchbrackets.js"></script>
+<link rel="stylesheet" href="CM/addon/hint/show-hint.css">
+<script src="CM/addon/hint/show-hint.js"></script>
+<script src="CM/mode/clike/clike.js"></script>
+<style>.CodeMirror {border: 2px inset #dee;}</style>
+
+
  <style>
 
     .selected{font-weight:bold; background: #FF99; color:#4caf50;}
@@ -16,10 +32,20 @@
 
   <script>
 
+var cppEditor;
+
 $(document).ready(function(){
    document.getElementById("src_view").value=" ";
    document.getElementById("compile_view").value=" ";
    document.getElementById("compile_view_tool").value=" ";
+   cppEditor = CodeMirror.fromTextArea(document.getElementById("src_view"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        mode: "text/x-c++src",
+        theme:'eclipse'
+      });
+    
+  cppEditor.setSize("75%", "95%");
 });
 
  function mover(x)
@@ -44,7 +70,7 @@ $(document).ready(function(){
     <li><a href="#tabs-3" style=" background: #ffffc8;">Update Raspbian  </a></li>
    
   </ul>
-  <div id="tabs-1" style=" height:55%; width:95%; float: left;">
+  <div id="tabs-1" style=" height:95%; width:95%; float: left;">
 
     <p id="errlog_view"   style=""></p>
     <div id="radio">
@@ -52,16 +78,16 @@ $(document).ready(function(){
     <a   id="radio21" name="radio" onmouseover="Downlaod_detail(this)" onmouseout="Downlaod_undetail(this)" onclick="$( '#dialog-confirm').dialog({title:'Download Marlin source code?'}).dialog('open');"  ><label for="radio21">Update source</label></a>
     
     </div>
-     <p>
-		<textarea id="src_view" cols="50" rows="100" style=" height:95%; width:75%; float: left;top:0px;"></textarea>
-	 </p>
-	
-  <div style=" height:500px;overflow-x:auto; overflow-y:auto; ">
+   <div style=" height:95%;overflow-x:auto; overflow-y:auto; float: right;width:20%">
 		<table id="src_list" style="height:10%;width:100%;float:left; background: #ffffc8;"> </table>
 		<input type="button"  id="list_bu" onclick="list_show_f()" style="float:left;position: relative;right:0%;top:0%;width:100%" value="Backed up"> 
 		<input type="button"  id="list_delete" onclick=" $( '#dialog-confirm').dialog({title:'Delete All the Backed up Files?'}).dialog('open');"  style="float:left;position: relative;right:0%;top:0%;width:50%;visibility:hidden;" value="Delete All"> 
 		<table id="src_list2" style="height:10%;width:100%;float:left;visibility:hidden; background: #ffffff;"> </table>
     </div>
+    <p>
+		<textarea id="src_view" cols="50" rows="100" style=" height:95%; width:75%; float: left;top:0px;"></textarea>
+	 </p>
+	
   </div>
   <div id="tabs-2" style=" height:85%; width:95%; float: left;">
 
@@ -228,13 +254,16 @@ window.addEventListener("load", function(){ //when page loads
 
 socket.on('src_view', function (data) { //get button status from client
   
- document.getElementById("src_view").value = data; //change checkbox according to push button on Raspberry Pi
+ //document.getElementById("src_view").value = data; //change checkbox according to push button on Raspberry Pi
+ cppEditor.getDoc().setValue(data);
+
   //socket.emit("light", data); //send push button status to back to server
 });
 
 socket.on('src_view_down', function (data) { //get button status from client
-  
- document.getElementById("src_view").value += data; //change checkbox according to push button on Raspberry Pi
+ var data1=cppEditor.getDoc().getValue()+data;
+  cppEditor.getDoc().setValue(data1);
+ //document.getElementById("src_view").value += data; //change checkbox according to push button on Raspberry Pi
   //socket.emit("light", data); //send push button status to back to server
 });
 socket.on('compile_view_tool', function (data) { //get button status from client
@@ -354,7 +383,9 @@ function Save_src()
       alert("If the update is complete, please reload this page");
       return;
     }
-	var src_o=document.getElementById("src_view").value;
+	//var src_o=document.getElementById("src_view").value;
+	var src_o=cppEditor.getDoc().getValue();
+	//alert(src_o);
 	socket.emit("src_write",select_name+"|luojin|"+src_o);
 }
 function Compile_src(run_s)
@@ -402,7 +433,8 @@ function update_src(rindex)
 		// document.getElementById("compile_view").value="Updating marlin..\n\n";
 		updateing=1;
 		
-        document.getElementById("src_view").value="Updating marlin...\n\n";
+      //  document.getElementById("src_view").value="Updating marlin...\n\n";
+         cppEditor.getDoc().setValue("Updating marlin...\n\n");
 		socket.emit("src_update","marlin");
 		  
 		 

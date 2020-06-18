@@ -57,6 +57,7 @@ function handler (request, response) { //create server
     res.write(data); //write data from index.html
     return res.end();
   });*/
+  	console.log(request.method);
   	if (request.method === "GET") {
         let fname;
         // Look at what resource was requested and match that up
@@ -64,13 +65,15 @@ function handler (request, response) { //create server
         // DO not accept any resource requested because that could open up
         // your server for people to request your actual server code files
         console.log(request.url);
-        switch(request.url) {
+		
+       switch(request.url) {
+			 
             case "/":
                 fname = "/home/pi/phtml/html/index.html";
 			    //read_u_path();
 				path="/home/pi/PandaPI/Marlin2.x/pandapi/";
                 break;
-            case "/css/socket.io.js":
+/*             case "/css/socket.io.js":
                 fname = "/home/pi/phtml/html/css/socket.io.js";
                 break;
             case "/css/jquery-ui.min.css":
@@ -91,7 +94,10 @@ function handler (request, response) { //create server
             case "/css/105842.jpg":
                 fname = "/home/pi/phtml/html/css/105842.jpg";
                 break;
+				///////////////
+*/
             default:
+            fname="/home/pi/phtml/html"+request.url;
                 break;
         }
         if (fname) {
