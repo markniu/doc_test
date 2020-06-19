@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="CM/addon/hint/show-hint.css">
 <script src="CM/addon/hint/show-hint.js"></script>
 <script src="CM/mode/clike/clike.js"></script>
+<script src="CM/mode/octave/octave.js"></script>
 <style>.CodeMirror {border: 2px inset #dee;}</style>
 
 
@@ -44,8 +45,16 @@ $(document).ready(function(){
         mode: "text/x-c++src",
         theme:'eclipse'
       });
+   logEditor = CodeMirror.fromTextArea(document.getElementById("compile_view"), {
+        lineNumbers: true,
+        matchBrackets: true,
+        mode: "text/x-octave",
+        theme:'eclipse'
+      });
     
   cppEditor.setSize("75%", "95%");
+  logEditor.setSize("75%", "95%");
+  
 });
 
  function mover(x)
@@ -97,7 +106,7 @@ $(document).ready(function(){
     
     </div>
      <p>
-		<textarea id="compile_view" cols="50" rows="100" style=" height:95%; width:75%; float: left;"></textarea>
+		<textarea id="compile_view" cols="50" rows="200" style=" height:95%; width:75%; float: left;"></textarea>
 	 </p>
   </div>
   <div id="tabs-3" style=" height:85%; width:95%; float: left;">
@@ -280,46 +289,72 @@ socket.on('alert_dialog', function (data) {
 });
 
 socket.on('src_compile_log', function (data) { //get button status from client
-  	
-	 document.getElementById("compile_view").value += data; //change checkbox according to push button on Raspberry Pi
 
-	 if(document.getElementById("compile_view").value.indexOf("make: Leaving directory '/")>=0)
+  	
+  	var data2=logEditor.getDoc().getValue()+data;
+     logEditor.getDoc().setValue(data2);
+     
+    logEditor.setCursor(logEditor.getDoc().lineCount(),0);
+	// document.getElementById("compile_view").value += data; //change checkbox according to push button on Raspberry Pi
+
+	 if(data2.indexOf("make: Leaving directory '/")>=0)
 	 {
-	 	if((document.getElementById("compile_view").value.indexOf("' failed")>=0)||
-	 	  (document.getElementById("compile_view").value.indexOf(" Error ")>=0))
+	 	if((data2.indexOf("' failed")>=0)||
+	 	  (data2.indexOf(" Error ")>=0))
 	 	{
-	 		alert("compile failed");
+            
+	 		
 	 		document.getElementById("compile_view").value += "compile failed !";
+	 		data2=logEditor.getDoc().getValue()+"compile failed !";
+            logEditor.getDoc().setValue(data2);
+            
+          //  setTimeout("logEditor.getDoc().setValue(logEditor.getDoc().getValue()+' ');logEditor.scrollTo(null,logEditor.getDoc().lineCount());",1000);
+            
+            logEditor.setCursor(logEditor.getDoc().lineCount(),0);
+            
+           // logEditor.getDoc().markText({line:1,ch:1},{line:3,ch:1},{css:"color: #ff0000"});
+            
+             alert("compile failed");
 	 	}
 	 	else
 	 	{
 			alert("compile ok");
-			document.getElementById("compile_view").value += "compile OK ! you can click run now";
+			//document.getElementById("compile_view").value += "compile OK ! you can click run now";
+			data2=logEditor.getDoc().getValue()+"compile OK ! you can click run now";
+            logEditor.getDoc().setValue(data2);
+             
 		}
 		  $("#radio20").prop("disabled", false);
 		  $("#radio12").prop("disabled", false);
 		  $("#radio22").prop("disabled", false);
 		  
 	 }
-	 else if(document.getElementById("compile_view").value.indexOf("arm-linux-gnueabihf-strip pi_marlin")>=0)
+	 else if(data2.indexOf("arm-linux-gnueabihf-strip pi_marlin")>=0)
 	 {
 			alert("compile ok");
 			all_compile_flag=0;
 		  $("#radio20").prop("disabled", false);
 		  $("#radio12").prop("disabled", false);
 		  $("#radio22").prop("disabled", false);
-		  document.getElementById("compile_view").value += "compile ok";
+		 // document.getElementById("compile_view").value += "compile ok";
+		  data2=logEditor.getDoc().getValue()+"compile ok";
+          logEditor.getDoc().setValue(data2);
 	 }
-	 else if(document.getElementById("compile_view").value.indexOf("Sd2Card.cpp -o Sd2Card.o")>=0)
+	 else if(data2.indexOf("Sd2Card.cpp -o Sd2Card.o")>=0)
 	 {
 	 //	if(all_compile_flag==1)
 	 		//Compile_src(0);
 	 //	 all_compile_flag=0;
 	 }
-	 if(document.getElementById("compile_view").value.length>1024*10)
-	 	document.getElementById("compile_view").value='';
-	 var obj = document.getElementById("compile_view");
-	  obj.scrollTop = obj.scrollHeight; // good
+	 if(data2.length>1024*100)
+	 {
+	 	data2.value='';
+	 	 
+        logEditor.getDoc().setValue("");
+        
+	 }
+	 //var obj = document.getElementById("compile_view");
+	 // obj.scrollTop = obj.scrollHeight; // good
 });
 socket.on('src_err', function (data) { //get button status from client  
   document.getElementById("errlog_view").innerHTML = data;
@@ -393,8 +428,9 @@ function Compile_src(run_s)
 	 $( "#dialog" ).dialog( "open" );
 	if(run_s==0)
 	{
-	    document.getElementById("compile_view").value="Compiling ...";
+	 //   document.getElementById("compile_view").value="Compiling ...";
 		socket.emit("src_compile","");
+		logEditor.getDoc().setValue("Compiling ...");
 		all_compile_flag=1;
 		$( '#radio20 input' ).attr( 'disabled', true);
 		$( '#radio12 input' ).attr( 'disabled', true);
@@ -403,18 +439,19 @@ function Compile_src(run_s)
 	}
 	else if(run_s==1)
 	{
-	    document.getElementById("compile_view").value="Compiling All, may need more than several minutes ...";
+	   // document.getElementById("compile_view").value="Compiling All, may need more than several minutes ...";
 		socket.emit("src_compile","all");
 		all_compile_flag=1;
-
+        logEditor.getDoc().setValue("Compiling All, may need more than several minutes ...");
 		 $("#radio20").prop("disabled", true);
 		 $("#radio12").prop("disabled", true);
 		 $("#radio22").prop("disabled", true);
 	}
 	else if(run_s==2)
 	{
-	   document.getElementById("compile_view").value="The printer application will automatically restart within 10 seconds\n";
+	   //document.getElementById("compile_view").value="The printer application will automatically restart within 10 seconds\n";
 	   socket.emit("src_run","");
+	   logEditor.getDoc().setValue("The printer application will automatically restart within 10 seconds\n");
 	   
 	}
 	
