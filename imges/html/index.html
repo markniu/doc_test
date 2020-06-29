@@ -15,13 +15,20 @@
 
 <link rel="stylesheet" href="CM/lib/codemirror.css">
 <link rel="stylesheet" href="CM/theme/eclipse.css">
-
+<link rel="stylesheet" href="CM/addon/dialog/dialog.css">
+<link rel="stylesheet" href="CM/addon/search/matchesonscrollbar.css">
 <script src="CM/lib/codemirror.js"></script>
 <script src="CM/addon/edit/matchbrackets.js"></script>
 <link rel="stylesheet" href="CM/addon/hint/show-hint.css">
 <script src="CM/addon/hint/show-hint.js"></script>
 <script src="CM/mode/clike/clike.js"></script>
 <script src="CM/mode/octave/octave.js"></script>
+<script src="CM/addon/dialog/dialog.js"></script>
+<script src="CM/addon/search/searchcursor.js"></script>
+<script src="CM/addon/search/search.js"></script>
+<script src="CM/addon/scroll/annotatescrollbar.js"></script>
+<script src="CM/addon/search/matchesonscrollbar.js"></script>
+<script src="CM/addon/search/jump-to-line.js"></script>
 <style>.CodeMirror {border: 2px inset #dee;}</style>
 
 
@@ -43,6 +50,7 @@ $(document).ready(function(){
         lineNumbers: true,
         matchBrackets: true,
         mode: "text/x-c++src",
+        extraKeys: {"Alt-F": "findPersistent"},
         theme:'eclipse'
       });
    logEditor = CodeMirror.fromTextArea(document.getElementById("compile_view"), {
@@ -82,10 +90,13 @@ $(document).ready(function(){
   <div id="tabs-1" style=" height:95%; width:95%; float: left;">
 
     <p id="errlog_view"   style=""></p>
+
     <div id="radio">
+    <a    id="radio31" name="radio" onclick="cppEditor.execCommand('find')" checked="checked" ><label for="radio31"  >Search</label></a>
+    <a    id="radio32" name="radio" onclick="cppEditor.execCommand('findNext')" checked="checked" ><label for="radio32"  >Next</label></a>
+    <a    id="radio33" name="radio" onclick="cppEditor.execCommand('findPrev')" checked="checked" ><label for="radio33"  >Prev</label></a>
     <a    id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11"  >Save changes</label></a>
     <a   id="radio21" name="radio" onmouseover="Downlaod_detail(this)" onmouseout="Downlaod_undetail(this)" onclick="$( '#dialog-confirm').dialog({title:'Download Marlin source code?'}).dialog('open');"  ><label for="radio21">Update source</label></a>
-    
     </div>
    <div style=" height:95%;overflow-x:auto; overflow-y:auto; float: right;width:20%">
 		<table id="src_list" style="height:10%;width:100%;float:left; background: #ffffc8;"> </table>
