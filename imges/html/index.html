@@ -29,7 +29,12 @@
 <script src="CM/addon/scroll/annotatescrollbar.js"></script>
 <script src="CM/addon/search/matchesonscrollbar.js"></script>
 <script src="CM/addon/search/jump-to-line.js"></script>
-<style>.CodeMirror {border: 2px inset #dee;}</style>
+<script src="CM/addon/selection/mark-selection.js"></script>
+<script src="panda.js"></script>
+
+<style>.CodeMirror {border: 2px inset #dee;}
+.styled-background { background-color: #ff7; }
+</style>
 
 
  <style>
@@ -43,6 +48,7 @@
 var cppEditor;
 
 $(document).ready(function(){
+    document.getElementById('easy_ui0').defaultChecked;
    document.getElementById("src_view").value=" ";
    document.getElementById("compile_view").value=" ";
    document.getElementById("compile_view_tool").value=" ";
@@ -51,6 +57,7 @@ $(document).ready(function(){
         matchBrackets: true,
         mode: "text/x-c++src",
         extraKeys: {"Alt-F": "findPersistent"},
+        styleSelectedText: true,
         theme:'eclipse'
       });
    logEditor = CodeMirror.fromTextArea(document.getElementById("compile_view"), {
@@ -62,7 +69,8 @@ $(document).ready(function(){
     
   cppEditor.setSize("75%", "95%");
   logEditor.setSize("75%", "95%");
-  
+  cppEditor.getDoc().setValue("    #define  PREHEAT_1_TEMP_BED     70  /// /**/ \n #define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255\n#define PREHEAT_2_LABEL       \"ABS\"");
+	update_Emode("");
 });
 
  function mover(x)
@@ -77,6 +85,10 @@ $(document).ready(function(){
   $( function() {
     $( "#tabs" ).tabs();
   } );
+
+
+    
+  
   </script>
 
 
@@ -88,26 +100,117 @@ $(document).ready(function(){
    
   </ul>
   <div id="tabs-1" style=" height:95%; width:95%; float: left;">
+	<input type="radio" onclick="ui_mode_choose(0)" name="colors" id="Easy">Easy mode  
+	<input type="radio" onclick="ui_mode_choose(1)" name="colors" id="Advanced">Advanced mode
+	<div id="easy_ui1" style="visibility:hidden">
+		    <p id="errlog_view"   style=""></p>
 
-    <p id="errlog_view"   style=""></p>
+		    <div id="radio">
+		    <a    id="radio31" name="radio" onclick="cppEditor.execCommand('find')" checked="checked" ><label for="radio31"  >Search</label></a>
+		    <a    id="radio32" name="radio" onclick="cppEditor.execCommand('findNext')" checked="checked" ><label for="radio32"  >Next</label></a>
+		    <a    id="radio33" name="radio" onclick="cppEditor.execCommand('findPrev')" checked="checked" ><label for="radio33"  >Prev</label></a>
+		    <a    id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11"  >Save changes</label></a>
+		    <a   id="radio21" name="radio" onmouseover="Downlaod_detail(this)" onmouseout="Downlaod_undetail(this)" onclick="$( '#dialog-confirm').dialog({title:'Download Marlin source code?'}).dialog('open');"  ><label for="radio21">Update source</label></a>
+		    </div>
+		   <div style=" height:95%;overflow-x:auto; overflow-y:auto; float: right;width:20%">
+				<table id="src_list" style="height:10%;width:100%;float:left; background: #ffffc8;"> </table>
+				<input type="button"  id="list_bu" onclick="list_show_f()" style="float:left;position: relative;right:0%;top:0%;width:100%" value="Backed up"> 
+				<input type="button"  id="list_delete" onclick=" $( '#dialog-confirm').dialog({title:'Delete All the Backed up Files?'}).dialog('open');"  style="float:left;position: relative;right:0%;top:0%;width:50%;visibility:hidden;" value="Delete All"> 
+				<table id="src_list2" style="height:10%;width:100%;float:left;visibility:hidden; background: #ffffff;"> </table>
+		    </div>
+		    <p>
+				<textarea id="src_view" cols="50" rows="100" style=" height:95%; width:75%; float: left;top:0px;"></textarea>
+			 </p>
+	</div>
+	<div id="easy_ui0" style="position:absolute;left:2%;top:18%;height:95%; width:75%;">
+	   <fieldset>
+	   <br>
+	   Print Size: X <input type="text" id="x_size" onchange="change_input(this.id,'X_BED_SIZE')" name="x" value="" style="width:80px;">
+	   Y <input type="text" id="y_size" name="y" onchange="change_input(this.id,'Y_BED_SIZE')" value="" style="width:80px;">
+	   Z <input type="text" id="z_size" name="z" onchange="change_input(this.id,'Z_MAX_POS')" value="" style="width:80px;">
+	   <br><br>
+	   Driver Type:
+	  	<label for="Xmotor">X</label>
+	    <select name="Xmotor" id="Xmotor" onchange="change_input(this.id,'X_DRIVER_TYPE')">
+	      <option >A4988</option>
+	      <option>TMC2208</option>
+	      <option>TMC2209</option>
+	    </select>
+	  	<label for="Ymotor">Y</label>
+	    <select name="Ymotor" id="Ymotor" onchange="change_input(this.id,'Y_DRIVER_TYPE')">
+	      <option >A4988</option>
+	      <option>TMC2208</option>
+	      <option>TMC2209</option>
+	    </select>
+	  	<label for="Zmotor">Z</label>
+	    <select name="Zmotor" id="Zmotor" onchange="change_input(this.id,'Z_DRIVER_TYPE')">
+	      <option >A4988</option>
+	      <option>TMC2208</option>
+	      <option>TMC2209</option>
+	    </select>
+	  	<label for="E0motor">E0</label>
+	    <select name="E0motor" id="E0motor" onchange="change_input(this.id,'E0_DRIVER_TYPE')">
+	      <option >A4988</option>
+	      <option>TMC2208</option>
+	      <option>TMC2209</option>
+	    </select>
+	  	
+	    <br><br>
+	     Motor direction:
+		 <label for="dir_x">X</label>
+	     <select name="dir_x" id="dir_x" onchange="change_input(this.id,'INVERT_X_DIR')">
+	      <option>true</option>
+	      <option>false</option>
+	    </select>	
+		 <label for="dir_y">Y</label>
+	     <select name="dir_y" id="dir_y" onchange="change_input(this.id,'INVERT_Y_DIR')">
+	      <option>true</option>
+	      <option>false</option>
+	    </select>	
+		 <label for="dir_z">Z</label>
+	     <select name="dir_z" id="dir_z" onchange="change_input(this.id,'INVERT_Z_DIR')">
+	      <option>true</option>
+	      <option>false</option>
+	    </select>	
+		 <label for="dir_e0">E0</label>
+	     <select name="dir_e0" id="dir_e0" onchange="change_input(this.id,'INVERT_E0_DIR')">
+	      <option>true</option>
+	      <option>false</option>
+	    </select>	
 
-    <div id="radio">
-    <a    id="radio31" name="radio" onclick="cppEditor.execCommand('find')" checked="checked" ><label for="radio31"  >Search</label></a>
-    <a    id="radio32" name="radio" onclick="cppEditor.execCommand('findNext')" checked="checked" ><label for="radio32"  >Next</label></a>
-    <a    id="radio33" name="radio" onclick="cppEditor.execCommand('findPrev')" checked="checked" ><label for="radio33"  >Prev</label></a>
-    <a    id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11"  >Save changes</label></a>
-    <a   id="radio21" name="radio" onmouseover="Downlaod_detail(this)" onmouseout="Downlaod_undetail(this)" onclick="$( '#dialog-confirm').dialog({title:'Download Marlin source code?'}).dialog('open');"  ><label for="radio21">Update source</label></a>
-    </div>
-   <div style=" height:95%;overflow-x:auto; overflow-y:auto; float: right;width:20%">
-		<table id="src_list" style="height:10%;width:100%;float:left; background: #ffffc8;"> </table>
-		<input type="button"  id="list_bu" onclick="list_show_f()" style="float:left;position: relative;right:0%;top:0%;width:100%" value="Backed up"> 
-		<input type="button"  id="list_delete" onclick=" $( '#dialog-confirm').dialog({title:'Delete All the Backed up Files?'}).dialog('open');"  style="float:left;position: relative;right:0%;top:0%;width:50%;visibility:hidden;" value="Delete All"> 
-		<table id="src_list2" style="height:10%;width:100%;float:left;visibility:hidden; background: #ffffff;"> </table>
-    </div>
-    <p>
-		<textarea id="src_view" cols="50" rows="100" style=" height:95%; width:75%; float: left;top:0px;"></textarea>
-	 </p>
-	
+	    <br><br>
+	     Direction of endstops when homing:
+		 <label for="home_x">X</label>
+	     <select name="home_x" id="home_x"  onchange="change_input(this.id,'X_HOME_DIR')">
+	      <option>MIN</option>
+	      <option>MAX</option>
+	    </select>	
+		 <label for="home_y">Y</label>
+	     <select name="home_y" id="home_y"  onchange="change_input(this.id,'Y_HOME_DIR')">
+	      <option>MIN</option>
+	      <option>MAX</option>
+	    </select>	
+		 <label for="home_z">Z</label>
+	     <select name="home_z" id="home_z" onchange="change_input(this.id,'Z_HOME_DIR')">
+	      <option>MIN</option>
+	      <option>MAX</option>
+	    </select>	
+
+		<br><br>
+		BLTOUCH:
+		<label for="BLTOUCH"></label>
+	     <select name="BLTOUCH" id="BLTOUCH" onchange="change_input(this.id,'BLTOUCH')">
+	      <option>Enable</option>
+	      <option>Disable</option>
+	    </select>
+		<br><br>
+		<a    id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11"  >Save changes</label></a>
+		
+	    </form>
+	   </fieldset>
+		
+	</div>
+
   </div>
   <div id="tabs-2" style=" height:85%; width:95%; float: left;">
 
@@ -276,7 +379,7 @@ socket.on('src_view', function (data) { //get button status from client
   
  //document.getElementById("src_view").value = data; //change checkbox according to push button on Raspberry Pi
  cppEditor.getDoc().setValue(data);
-
+ update_Emode(data);
   //socket.emit("light", data); //send push button status to back to server
 });
 
