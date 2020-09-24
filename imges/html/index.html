@@ -154,7 +154,6 @@ $(document).ready(function(){
 	      <option>TMC2208</option>
 	      <option>TMC2209</option>
 	    </select>
-	  	
 	    <br><br>
 	     Motor direction:
 		 <label for="dir_x">X</label>
@@ -179,7 +178,7 @@ $(document).ready(function(){
 	    </select>	
 
 	    <br><br>
-	     Direction of endstops when homing:
+	     Home direction:
 		 <label for="home_x">X</label>
 	     <select name="home_x" id="home_x"  onchange="change_input(this.id,'X_HOME_DIR')">
 	      <option>MIN</option>
@@ -195,7 +194,25 @@ $(document).ready(function(){
 	      <option>MIN</option>
 	      <option>MAX</option>
 	    </select>	
-
+	     
+	    <br><br>
+	     Endstop logic:    
+		 <label for="logic_x">X</label>
+	     <select name="logic_x" id="logic_x"  onchange="change_input(this.id,'X_'+document.getElementById('home_x').value+'_ENDSTOP_INVERTING')">
+	      <option>false</option>
+	      <option>true</option>
+	    </select>	
+		 <label for="logic_y">Y</label>
+	     <select name="logic_y" id="logic_y"  onchange="change_input(this.id,'Y_'+document.getElementById('home_y').value+'_ENDSTOP_INVERTING')">
+	      <option>false</option>
+	      <option>true</option>
+	    </select>	
+		 <label for="logic_z">Z</label>
+	     <select name="logic_z" id="logic_z" onchange="change_input(this.id,'Z_'+document.getElementById('home_z').value+'_ENDSTOP_INVERTING')">
+	      <option>false</option>
+	      <option>true</option>
+	    </select>	
+        Set to true to invert the logic of the endstop
 		<br><br>
 		BLTOUCH:
 		<label for="BLTOUCH"></label>
@@ -203,7 +220,28 @@ $(document).ready(function(){
 	      <option>Enable</option>
 	      <option>Disable</option>
 	    </select>
-		<br><br>
+	   <br><br>
+	   For TMC2209 only
+	   <fieldset>
+	    <label for="SENSORLESS_HOMING">Sensorless homing</label>
+	     <select name="SensorLessHome" id="SENSORLESS_HOMING" onchange="change_input(this.id,'SENSORLESS_HOMING')">
+	      <option>Enable</option>
+	      <option>Disable</option>
+	    </select>
+	  	SENSITIVITY: X<input type="text" id="x_sen" name="y" onchange="change_input(this.id,'X_STALL_SENSITIVITY')" value="" style="width:80px;">
+	  	Y<input type="text" id="y_sen" name="y" onchange="change_input(this.id,'Y_STALL_SENSITIVITY')" value="" style="width:80px;">
+	  	(0-255)
+        <br><br>
+        Motor current:
+	  	X <input type="text" id="x_current" name="y" onchange="change_input(this.id,'X_CURRENT_PI')" value="" style="width:80px;">
+	  	Y <input type="text" id="y_current" name="y" onchange="change_input(this.id,'Y_CURRENT_PI')" value="" style="width:80px;">
+	  	Z <input type="text" id="z_current" name="y" onchange="change_input(this.id,'Z_CURRENT_PI')" value="" style="width:80px;">
+	  	E <input type="text" id="e_current" name="y" onchange="change_input(this.id,'E0_CURRENT_PI')" value="" style="width:80px;">
+	  	(mA)
+	  	</fieldset>
+
+	    
+		<br>
 		<a    id="radio11" name="radio" onclick="Save_src()" checked="checked" ><label for="radio11"  >Save changes</label></a>
 		
 	    </form>

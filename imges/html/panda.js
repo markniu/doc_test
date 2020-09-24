@@ -35,9 +35,9 @@ function get_define_string(line_str,st_str,end_str)
 	 else
 	 	value_str=line_str.substring(stop+end_str.length,stop+end_str.length+un_start).replace(/\s+/g,"");
 	   //alert(line_str.substring(stop+end_str.length)+"::"+value_str);
-	  //alert(line_str);
 	 return value_str;
 	}
+
 	return "";
 
 }
@@ -76,6 +76,8 @@ function replace_define(start_str,stop_str,replace_str)
 		//document.write(line.text.split(" ") + "<br />");
 		if(stop_str=="BLTOUCH")
 			value_s=get_define_enable(line.text,start_str,stop_str);
+		else if(stop_str=="SENSORLESS_HOMING")
+			value_s=get_define_enable(line.text,start_str,stop_str);
 		else
 			value_s=get_define_string(line.text,start_str,stop_str);
 		if(value_s.length>0)
@@ -110,7 +112,19 @@ function change_input(id,des_str)
 	}
 	//alert(uncomment+"#define "+des_str+" "+des_value);
 	replace_define("#define",des_str,uncomment+"#define "+des_str+" "+des_value);
-	
+	////////////////
+	if(document.getElementById("SENSORLESS_HOMING").value=="Enable")
+	{
+		document.getElementById('x_sen').removeAttribute("disabled");
+		document.getElementById('y_sen').removeAttribute("disabled");
+	}
+	else
+	{
+		document.getElementById('x_sen').setAttribute("disabled","disabled");
+		document.getElementById('y_sen').setAttribute("disabled","disabled");
+	}
+	////////////////
+			
 }
 
 function update_Emode(src_txt)
@@ -186,6 +200,19 @@ function update_Emode(src_txt)
 			else
 				document.getElementById("home_z").value="MAX";
 		}
+		////////////end stop logic  X_MIN_ENDSTOP_INVERTING
+		value_s=get_define_string(line.text,"#define","X_"+document.getElementById("home_x").value+"_ENDSTOP_INVERTING");
+		if(value_s.length>0)
+			document.getElementById("logic_x").value=value_s;
+		value_s=get_define_string(line.text,"#define","Y_"+document.getElementById("home_y").value+"_ENDSTOP_INVERTING");
+		if(value_s.length>0)
+			document.getElementById("logic_y").value=value_s;
+		value_s=get_define_string(line.text,"#define","Z_"+document.getElementById("home_z").value+"_ENDSTOP_INVERTING");
+		if(value_s.length>0)
+			document.getElementById("logic_z").value=value_s;
+
+		
+		
 	  //////////////////////BLTOUCH
 		value_s=get_define_enable(line.text,"#define","BLTOUCH");
 	    if(value_s.length>0) 
@@ -193,7 +220,52 @@ function update_Emode(src_txt)
 	    	
 	    	document.getElementById("BLTOUCH").value=value_s;
 	    }
+	  //////////////////////SENSORLESS_HOMING
+		value_s=get_define_enable(line.text,"#define","SENSORLESS_HOMING");
+	    if(value_s.length>0) 
+	    {
+	    	
+	    	document.getElementById("SENSORLESS_HOMING").value=value_s;
 		
+	    }
+	///////////////////////	
+		value_s=get_define_string(line.text,"#define","X_STALL_SENSITIVITY");
+		if(value_s.length>0)
+		{
+			if(document.getElementById("SENSORLESS_HOMING").value=="Enable")
+			{
+				document.getElementById('x_sen').removeAttribute("disabled");
+				document.getElementById('y_sen').removeAttribute("disabled");
+			}
+			else
+			{
+				document.getElementById('x_sen').setAttribute("disabled","disabled");
+				document.getElementById('y_sen').setAttribute("disabled","disabled");
+			}
+			document.getElementById("x_sen").value=value_s;
+		}
+
+		value_s=get_define_string(line.text,"#define","Y_STALL_SENSITIVITY");
+		if(value_s.length>0)
+			document.getElementById("y_sen").value=value_s;
+		value_s=get_define_string(line.text,"#define","X_CURRENT_PI");
+		if(value_s.length>0)
+			document.getElementById("x_current").value=value_s;
+
+		value_s=get_define_string(line.text,"#define","Y_CURRENT_PI");
+		if(value_s.length>0)
+			document.getElementById("y_current").value=value_s;
+
+		value_s=get_define_string(line.text,"#define","Z_CURRENT_PI");
+		if(value_s.length>0)
+			document.getElementById("z_current").value=value_s;
+
+		value_s=get_define_string(line.text,"#define","E0_CURRENT_PI");
+		if(value_s.length>0)
+			document.getElementById("e_current").value=value_s;
+
+
+   ///////////////////
 		
 
 
