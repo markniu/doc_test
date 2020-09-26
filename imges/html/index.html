@@ -97,7 +97,7 @@ $(document).ready(function(){
     <li><a href="#tabs-1" style=" background: #ffffc8;">Edit Marlin</a></li>
     <li><a href="#tabs-2" style=" background: #ffffc8;">Run Marlin </a></li>
     <li><a href="#tabs-3" style=" background: #ffffc8;">Update Raspbian  </a></li>
-   
+   <li><a   style=" background: #ffffc8;" onclick= "var url_o=window.location.href;window.open(url_o.substr(0,url_o.indexOf(':8181')))">OctoPrint</a></li>
   </ul>
   <div id="tabs-1" style=" height:95%; width:95%; float: left;">
 	<input type="radio" onclick="ui_mode_choose(0)" name="colors" id="Easy">Easy mode  
