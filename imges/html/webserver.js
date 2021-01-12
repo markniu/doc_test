@@ -1,9 +1,15 @@
-var http = require('http').createServer(handler); //require http server, and create server with function handler()
+//var http = require('http').createServer(handler); //require http server, and create server with function handler()
 var fs = require('fs'); //require filesystem module
-var io = require('socket.io')(http) //require socket.io module and pass the http object (server)
-//var Gpio = require('onoff').Gpio; //include onoff to interact with the GPIO
-//var LED = new Gpio(4, 'out'); //use GPIO pin 4 as output
-//var pushButton = new Gpio(17, 'in', 'both'); //use GPIO pin 17 as input, and 'both' button presses, and releases should be handled
+//var io = require('socket.io')(http) //require socket.io module and pass the http object (server)
+
+
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+app.get('*', handler);
+
+
 let path = "/home/pi/PandaPI/Marlin2.x/pandapi/";
 
 http.listen(8181); //listen to port 8080
@@ -426,4 +432,3 @@ process.on('SIGINT', function () { //on ctrl+c
  // pushButton.unexport(); // Unexport Button GPIO to free resources
   process.exit(); //exit completely
 }); 
-

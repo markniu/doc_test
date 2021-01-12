@@ -5,7 +5,7 @@
 </head>
 <body>
 
-<script src="css/socket.io.js"></script> <!-- include socket.io client side script -->
+<script src="/socket.io/socket.io.js"></script>
   <script src="css/jquery.min.js"></script>
   <script src="css/jquery-ui.min.js"></script>
   <link rel="stylesheet" href="css/jquery-ui.css">
@@ -404,6 +404,7 @@ function list_show_f()
   });
   
 var socket = io(); //load socket.io-client and connect to the host that serves the page
+//var socket =io.connect('http://192.168.137.48');
 window.addEventListener("load", function(){ //when page loads
  // var lightbox = document.getElementById("light");
  // lightbox.addEventListener("change", function() { //add event listener for when checkbox changes
