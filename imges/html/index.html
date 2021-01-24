@@ -502,7 +502,7 @@ socket.on('src_compile_log', function (data) { //get button status from client
 	 if(data2.length>1024*100)
 	 {
 	 	data2.value='';
-	 	 
+	 	socket.emit("ack","log" ); 
         logEditor.getDoc().setValue("");
         
 	 }
