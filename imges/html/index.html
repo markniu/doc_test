@@ -98,6 +98,7 @@ $(document).ready(function(){
     <li><a href="#tabs-2" style=" background: #ffffc8;">Run Marlin </a></li>
     <li><a href="#tabs-3" style=" background: #ffffc8;">Update Raspbian  </a></li>
    <li><a   style=" background: #ffffc8;" onclick= "var url_o=window.location.href;window.open(url_o.substr(0,url_o.indexOf(':8181')))">OctoPrint</a></li>
+   <li><a   style=" background: #ffffc8;" onclick= "$( '#dialog-confirm').dialog({title:'Reboot Raspberry Pi?'}).dialog('open');">Reboot</a></li>
   </ul>
   <div id="tabs-1" style=" height:95%; width:95%; float: left;">
 	<input type="radio" onclick="ui_mode_choose(0)" name="colors" id="Easy">Easy mode  
@@ -255,13 +256,14 @@ $(document).ready(function(){
     <div id="radio20">
     <input type="radio" id="radio12" name="radio" onclick="Compile_src(1)" checked="checked" ><label for="radio12">Compile</label>
     <input type="radio" id="radio22" name="radio"  onclick="Compile_src(2)"  ><label for="radio22">Run </label>
-    
     </div>
      <p>
 		<textarea id="compile_view" cols="50" rows="200" style=" height:95%; width:75%; float: left;"></textarea>
 	 </p>
   </div>
   <div id="tabs-3" style=" height:85%; width:95%; float: left;">
+    <a onclick=" $( '#dialog-confirm').dialog({title:'Flash MCU firmware for pandapi?'}).dialog('open');"  >Flash MCU(pandapi)</a>
+    <a onclick=" $( '#dialog-confirm').dialog({title:'Flash MCU firmware for klipper?'}).dialog('open');"  >Flash MCU(klipper)</a>
 
     <a onclick=" $( '#dialog-confirm').dialog({title:'Update Raspbian?'}).dialog('open');"  >Update Raspbian</a>
 
@@ -339,6 +341,22 @@ $(function() {
 			setTimeout("window.location.reload()",2000);
 			
 		  }
+		  else if($(this).dialog( "option", "title" ).indexOf('klipper')>=0)
+		  {
+			
+			update_src(2);
+		  }
+		  else if($(this).dialog( "option", "title" ).indexOf('pandapi')>=0)
+		  {
+			update_src(3);
+			
+		  }
+		  else if($(this).dialog( "option", "title" ).indexOf('Reboot Raspberry')>=0)
+		  {
+			socket.emit("src_update","rpi_reboot");
+			
+		  }
+
           else
             update_src(1);
         },
@@ -429,8 +447,20 @@ socket.on('src_view_down', function (data) { //get button status from client
   //socket.emit("light", data); //send push button status to back to server
 });
 socket.on('compile_view_tool', function (data) { //get button status from client
+
+/*  var tmp_dd=document.getElementById("compile_view_tool").value;
+  if(data.lastIndexOf("0/ 0k")>0)
+  {
+	data=data.substring(0,data.lastIndexOf("0/ 0k"));
+  }
+  
+  var n = tmp_dd.lastIndexOf("Ymodem sectors");
+  if(tmp_dd.lastIndexOf("BPS:")<0&&(data.lastIndexOf("Ymodem sectors")))
+  	document.getElementById("compile_view_tool").value=tmp_dd.substring(0,n-1)+data;
+  else*/
   
  document.getElementById("compile_view_tool").value += data; //change checkbox according to push button on Raspberry Pi
+ document.getElementById("compile_view_tool").scrollTop = document.getElementById("compile_view_tool").scrollHeight;
   //socket.emit("light", data); //send push button status to back to server
 });
 
@@ -502,7 +532,7 @@ socket.on('src_compile_log', function (data) { //get button status from client
 	 if(data2.length>1024*100)
 	 {
 	 	data2.value='';
-	 	socket.emit("ack","log" ); 
+	 	 
         logEditor.getDoc().setValue("");
         
 	 }
@@ -638,6 +668,31 @@ function update_src(rindex)
 		 document.getElementById("compile_view_tool").value="updateing web_tools..\n";
 
 		socket.emit("src_update","web_tools");
+		 
+	}
+	if(rindex==2)
+	{
+		 updateing=1;
+		 $( "#dialog" ).dialog( "open" );
+		 document.getElementById("compile_view_tool").value="flash MCU firmware for klipper..\n";
+
+		 
+
+		socket.emit("src_update","kill_marlin");
+		setTimeout("socket.emit('src_update','MCU klipper');", 3000 )
+		setTimeout("socket.emit('src_update','disable_marlin_boot');", 6000 )
+		 
+	}
+	if(rindex==3)
+	{
+		 updateing=1;
+		 $( "#dialog" ).dialog( "open" );
+		 document.getElementById("compile_view_tool").value="flash MCU firmware for pandapi..\n";
+
+		//socket.emit("src_update","MCU pandapi");
+		socket.emit("src_update","kill_marlin");
+		setTimeout("socket.emit('src_update','MCU pandapi');", 3000 )
+		setTimeout("socket.emit('src_update','enable_marlin_boot');", 6000 )
 		 
 	}
 }

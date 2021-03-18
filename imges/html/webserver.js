@@ -234,6 +234,7 @@ function get_date_filename()
 
 function chmod_monitor()
 {
+	return;
     var exec = require('child_process').exec;
 	var cmdStr = 'sudo chmod 777 /home/pi/phtml/html/* ;sudo /home/pi/phtml/html/monitor_mo.sh' ;
 	
@@ -336,6 +337,71 @@ function compile_make()
 		});
 		
 	}
+	else if(data=='rpi_reboot')
+	{
+	  	var exec = require('child_process').exec;
+		var cmdStr = 'sudo reboot';
+		
+		exec(cmdStr, function (err, stdout, srderr) {
+		if(err) {
+			console.log(srderr);
+			socket.emit('compile_view_tool',srderr); 
+		} else 
+		{
+			console.log(stdout);
+		}	
+		});
+		
+	}
+
+	else if(data=='kill_marlin')
+	{
+	  	var exec = require('child_process').exec;
+		var cmdStr = 'sudo killall monitor.sh ;sudo killall pi_marlin ;python /home/pi/gpio_pullup.py ;sudo service klipper stop ;sudo killall sb ';
+		
+		exec(cmdStr, function (err, stdout, srderr) {
+		if(err) {
+			console.log(srderr);
+			socket.emit('compile_view_tool',srderr); 
+		} else 
+		{
+			console.log(stdout);
+		}	
+		});
+		
+	}
+	else if(data=='disable_marlin_boot')
+	{
+	  	var exec = require('child_process').exec;
+		var cmdStr = 'rm /home/pi/phtml/html/monitor.sh';
+		
+		exec(cmdStr, function (err, stdout, srderr) {
+		if(err) {
+			console.log(srderr);
+			socket.emit('compile_view_tool',srderr); 
+		} else 
+		{
+			console.log(stdout);
+		}	
+		});
+		
+	}
+	else if(data=='enable_marlin_boot')
+	{
+	  	var exec = require('child_process').exec;
+		var cmdStr = 'cp /home/pi/phtml/html/monitor.sh_b /home/pi/phtml/html/monitor.sh';
+		
+		exec(cmdStr, function (err, stdout, srderr) {
+		if(err) {
+			console.log(srderr);
+			socket.emit('compile_view_tool',srderr); 
+		} else 
+		{
+			console.log(stdout);
+		}	
+		});
+		
+	}
 	else if(data=='marlin')
 	{
 	///////////////
@@ -395,6 +461,67 @@ function compile_make()
 
 
 	}
+	else if(data=='MCU pandapi')
+	{
+		console.log('flash MCU: ' + data);
+		const { spawn } = require('child_process');
+		const ls = spawn('/home/pi/bl/ymode', ['/home/pi/PandaPI/Marlin2.x/pandapi/stm32f103cbt6.bin', ""],{
+		  stdio: ['pipe', 'pipe', 'pipe']
+		});
+
+
+			ls.stdout.on('data', (data) => {
+			   console.log(`stdout: ${data}`);
+			 // socket.emit('src_compile_log',`${data}`); 
+			  
+			   var tstr=`${data}`;
+			   tstr=tstr.replace(/home/g," ");
+			   tstr=tstr.replace(/pi/g," ");
+			   socket.emit('compile_view_tool',tstr); 
+
+			});
+			ls.stderr.on('data', (data) => {
+			  console.log(`stderr: ${data}`);
+			  socket.emit('compile_view_tool',` ${data}`); 
+			});
+
+			ls.on('close', (code) => {
+			  
+			  socket.emit('compile_view_tool',`stdclose:${code}`+" \n\n closed!  "); 
+			});
+
+	}
+	else if(data=='MCU klipper')
+	{
+		console.log('flash MCU: ' + data);
+		const { spawn } = require('child_process');
+		const ls = spawn('/home/pi/bl/ymode', ['/home/pi/klipper/out/klipper.bin', ""],{
+		  stdio: ['pipe', 'pipe', 'pipe']
+		});
+
+
+			ls.stdout.on('data', (data) => {
+			   console.log(`stdout: ${data}`);
+			 // socket.emit('src_compile_log',`${data}`); 
+			  
+			   var tstr=`${data}`;
+			   tstr=tstr.replace(/home/g," ");
+			   tstr=tstr.replace(/pi/g," ");
+			   socket.emit('compile_view_tool',tstr); 
+
+			});
+			ls.stderr.on('data', (data) => {
+			  console.log(`stderr: ${data}`);
+			  socket.emit('compile_view_tool',` ${data}`); 
+			});
+
+			ls.on('close', (code) => {
+			   
+			  socket.emit('compile_view_tool',`stdclose:${code}`+" \n\n closed!  "); 
+			});
+
+	}
+
   });
 /////////
   socket.on('src_run', function(data) { // 
