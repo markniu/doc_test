@@ -6,13 +6,13 @@ import subprocess
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-#GPIO.setup(13,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+#
     #Turn on the LED
-GPIO.setup(22, GPIO.OUT)
-GPIO.output(22,0)
+GPIO.setup(13, GPIO.OUT)
+GPIO.output(13,0)
 #Wait s
 time.sleep(1)
-GPIO.output(22,1) 
+GPIO.setup(13,GPIO.IN,pull_up_down=GPIO.PUD_UP)
 time.sleep(0.3)
 port = serial.Serial("/dev/ttyAMA0", baudrate = 115200)
 
