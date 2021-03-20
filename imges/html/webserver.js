@@ -465,7 +465,7 @@ function compile_make()
 	{
 		console.log('flash MCU: ' + data);
 		const { spawn } = require('child_process');
-		const ls = spawn('/home/pi/bl/ymode', ['/home/pi/PandaPI/Marlin2.x/pandapi/stm32f103cbt6.bin', ""],{
+		const ls = spawn('/home/pi/phtml/html/ymode', ['/home/pi/PandaPI/Marlin2.x/pandapi/stm32f103cbt6.bin', ""],{
 		  stdio: ['pipe', 'pipe', 'pipe']
 		});
 
@@ -495,7 +495,7 @@ function compile_make()
 	{
 		console.log('flash MCU: ' + data);
 		const { spawn } = require('child_process');
-		const ls = spawn('/home/pi/bl/ymode', ['/home/pi/klipper/out/klipper.bin', ""],{
+		const ls = spawn('/home/pi/phtml/html/ymode', ['/home/pi/klipper/out/klipper.bin', ""],{
 		  stdio: ['pipe', 'pipe', 'pipe']
 		});
 

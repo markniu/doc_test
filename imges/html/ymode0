@@ -1,0 +1,30 @@
+import RPi.GPIO as GPIO
+import serial
+import time
+import subprocess
+    #GPIO Basic initialization
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+#GPIO.setup(13,GPIO.IN,pull_up_down=GPIO.PUD_UP)
+    #Turn on the LED
+GPIO.setup(22, GPIO.OUT)
+GPIO.output(22,0)
+#Wait s
+time.sleep(1)
+GPIO.output(22,1) 
+time.sleep(0.3)
+port = serial.Serial("/dev/ttyAMA0", baudrate = 115200)
+
+print ("open port")
+
+
+port.write("C".encode())
+print ("C")
+time.sleep(1)
+port.write("C".encode())
+time.sleep(1)
+port.write("C".encode())
+time.sleep(1)
+port.write("1".encode())
+print ("1")

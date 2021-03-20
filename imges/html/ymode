@@ -1,0 +1,7 @@
+#!/bin/sh
+
+python /home/pi/phtml/html/ymode0
+DEV=/dev/ttyAMA0
+stty -F $DEV 115200
+echo "start flash .." $1
+sb $1 > $DEV < $DEV -C 0
