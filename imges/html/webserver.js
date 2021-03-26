@@ -251,7 +251,7 @@ function chmod_monitor()
 function compile_make()
 {
 	const { spawn } = require('child_process');
-	const ls = spawn('/home/pi/cmake', ['-C', path],{
+	const ls = spawn('/home/pi/phtml/html/cmake', ['-C', path],{
   stdio: ['pipe', 'pipe', 'pipe']
 });
 
