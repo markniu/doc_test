@@ -63,14 +63,14 @@ function handler (request, response) { //create server
     res.write(data); //write data from index.html
     return res.end();
   });*/
-  	console.log(request.method);
+  	//console.log(request.method);
   	if (request.method === "GET") {
         let fname;
         // Look at what resource was requested and match that up
         // with the appropriate file name
         // DO not accept any resource requested because that could open up
         // your server for people to request your actual server code files
-        console.log(request.url);
+       // console.log(request.url);
 		
        switch(request.url) {
 			 

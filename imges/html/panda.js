@@ -110,6 +110,20 @@ function change_input(id,des_str)
 		des_value="";
 		uncomment='//';
 	}
+ ///////////////////////
+    if(des_str=='DEFAULT_AXIS_STEPS_PER_UNIT')
+    {
+    	//des_value=" { 80, 80, 400, 93 } ";
+    	des_value=" {  "+document.getElementById("x_step").value	+
+    				", "+document.getElementById("y_step").value +
+    				", "+document.getElementById("z_step").value +
+    				", "+document.getElementById("e_step").value +" }";
+    				
+
+	}
+    
+
+	
 	//alert(uncomment+"#define "+des_str+" "+des_value);
 	replace_define("#define",des_str,uncomment+"#define "+des_str+" "+des_value);
 	////////////////
@@ -264,7 +278,18 @@ function update_Emode(src_txt)
 		if(value_s.length>0)
 			document.getElementById("e_current").value=value_s;
 
-
+        value_s=get_define_string(line.text,"#define","DEFAULT_AXIS_STEPS_PER_UNIT");
+		if(value_s.length>0)
+		{
+			value_s=value_s.replace(/\{/, "");
+			value_s=value_s.replace(/\}/, "");
+			var step_n=value_s.split(","); 
+			console.log(step_n); 
+			document.getElementById("x_step").value=step_n[0];
+			document.getElementById("y_step").value=step_n[1];
+			document.getElementById("z_step").value=step_n[2];
+			document.getElementById("e_step").value=step_n[3];
+		}
    ///////////////////
 		
 

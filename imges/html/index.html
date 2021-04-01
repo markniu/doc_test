@@ -213,8 +213,15 @@ $(document).ready(function(){
 	      <option>false</option>
 	      <option>true</option>
 	    </select>	
-        Set to true to invert the logic of the endstop
+        Set true/false to invert the logic of the endstop
 		<br><br>
+	   Steps Per Unit: X <input type="text" id="x_step" onchange="change_input(this.id,'DEFAULT_AXIS_STEPS_PER_UNIT')" name="xs" value="" style="width:60px;">
+	   Y <input type="text" id="y_step" name="ys" onchange="change_input(this.id,'DEFAULT_AXIS_STEPS_PER_UNIT')" value="" style="width:60px;">
+	   Z <input type="text" id="z_step" name="zs" onchange="change_input(this.id,'DEFAULT_AXIS_STEPS_PER_UNIT')" value="" style="width:60px;">
+	   E <input type="text" id="e_step" name="zs" onchange="change_input(this.id,'DEFAULT_AXIS_STEPS_PER_UNIT')" value="" style="width:60px;">
+		(steps/mm)
+	   <br><br>
+
 		BLTOUCH:
 		<label for="BLTOUCH"></label>
 	     <select name="BLTOUCH" id="BLTOUCH" onchange="change_input(this.id,'BLTOUCH')">
